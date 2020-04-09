@@ -1,23 +1,9 @@
-
-import sys, getopt
-import os
-from os.path import isfile, join
-from pathlib import Path
+from bs4 import BeautifulSoup
 
 from .. enums import POSSIBLE_INPUTS
+from .. sys_functions.find_files_in_folder import find_files
+from .. classes import FEBio_soup
 
-
-def read_properties(properties_list,path_p_folder):
-	props_content = []
-
-	for prop in properties_list:
-		try:
-			with open(join(path_p_folder, prop + ".txt"), "r") as file:
-					props_content.append(file.readlines())
-		except:
-			properties_list.remove(prop)
-			print("Could not find file associated with property:", prop)
-	return props_content
 
 def add_properties_to_feb(inputs): 
 	print("\nAdding properties...")
@@ -25,7 +11,22 @@ def add_properties_to_feb(inputs):
 	path_p_folder = inputs[POSSIBLE_INPUTS.PROPERTIES_FOLDER]
 	path_o_folder = inputs[POSSIBLE_INPUTS.OUTPUT_FOLDER]
 
-	print(inputs)
+	properties_files = find_files(path_p_folder,("fileFormat","xml"))
+
+	febio_soup = FEBio_soup(path_feb_file)
+
+
+
+	# print(soup.prettify())
+
+	# feb_file = open("path_feb_file","r")
+	# contents = infile.read()
+	# soup = BeautifulSoup(contents,'xml')
+	# titles = soup.find_all('title')
+	# for title in titles:
+	# 		print(title.get_text())
+
+	# print(inputs)
 
 
 	# feb_file_name = path_feb_file.split("\\")[-1]
