@@ -14,6 +14,11 @@ def add_properties_to_feb(inputs):
 	properties_files = find_files(path_p_folder,("fileFormat","xml"))
 
 	febio_soup = FEBio_soup(path_feb_file)
+	febio_soup.change_attr("plotfile", "type","heyhey",["output"])
+	# print(febio_soup.output)
+	# print(febio_soup.node_sets)
+
+	febio_soup.write_feb(path_o_folder, "test.feb")
 
 
 
