@@ -40,7 +40,7 @@ def get_input_arguments():
 		if _name not in user_inputs_upper_case:
 			if _type == INPUT_FLAG.R:
 				raise(AssertionError("Input needed not found:", _name))
-			elif _type == INPUT_FLAG.O:
+			else:
 				default_value = INPUT_DEFAULTS[command][inp[1]]
 				_user_input = inputs[POSSIBLE_INPUTS[_name]] = INPUT_DEFAULTS[command][inp[1]]
 				print("*** Warning:", _name,"was not provided. Falling back to default value:",default_value)
@@ -48,8 +48,9 @@ def get_input_arguments():
 			_user_input = user_inputs[user_inputs_upper_case.index(_name) + 1]
 
 		# Check if input is a absolute or local path. If not add full path to storage
-		if not isabs(_user_input):
-			_user_input = join(PATH_TO_STORAGE, _user_input)
+		if _type != INPUT_FLAG.O_NP and _type != INPUT_FLAG.R_NP:
+			if not isabs(_user_input):
+				_user_input = join(PATH_TO_STORAGE, _user_input)
 
 		# Check if it is a file or path to directory
 		if _name.find("FILE") != -1:

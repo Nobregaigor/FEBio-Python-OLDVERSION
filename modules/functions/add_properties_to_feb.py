@@ -2,35 +2,34 @@ from bs4 import BeautifulSoup
 
 from .. enums import POSSIBLE_INPUTS
 from .. sys_functions.find_files_in_folder import find_files
+from .. sys_functions.read_files import read_xml
 from .. classes import FEBio_soup
 
 
 def add_properties_to_feb(inputs): 
 	print("\nAdding properties...")
+
+	# Get inputs
 	path_feb_file = inputs[POSSIBLE_INPUTS.FEB_FILE]
 	path_p_folder = inputs[POSSIBLE_INPUTS.PROPERTIES_FOLDER]
 	path_o_folder = inputs[POSSIBLE_INPUTS.OUTPUT_FOLDER]
-
+	selected_prop = inputs[POSSIBLE_INPUTS.SELECTED_PROPERTIES].lower()
+	
+	# Get prop files avaiable
 	properties_files = find_files(path_p_folder,("fileFormat","xml"))
+	# Create a dict with avaiable props if they are in selected props
+	properties = []
+	for file in properties_files:
+		if selected_prop == "all":
+			properties.append( (file[2], read_xml(file[0])) )
+		else:
+			if file[2] in selected_prop:
+				properties.append( (file[2], read_xml(file[0])) )
 
+	
 	febio_soup = FEBio_soup(path_feb_file)
-	febio_soup.change_attr("plotfile", "type","heyhey",["output"])
-	# print(febio_soup.output)
-	# print(febio_soup.node_sets)
-
-	febio_soup.add_tag("hello","<div>hey</div>",0)
-	febio_soup.add_attr("hello", "type","heyhey")
-	febio_soup.add_attr("hello", "type","HUEHUE")
-
-	# febio_soup.add_tag("hello","<div>HUEHUEHUEHU</div>",0)
-	# febio_soup.add_tag("hello", "type","heuheu")
-
-	# febio_soup.change_tag_content("HEY","<div>HUEHUE</div>")
-
-	febio_soup.remove_tag("HEY",_all=True)
-
-
-	# print(febio_soup.soup)
+	for prop in properties:
+		febio_soup.insert_tag(prop[1])
 
 	febio_soup.write_feb(path_o_folder, "test.feb")
 

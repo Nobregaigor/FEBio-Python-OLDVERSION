@@ -25,6 +25,8 @@ from enum import Enum, auto
 class INPUT_FLAG(Enum):
 	R = auto() #	Required
 	O = auto() #  Optional
+	R_NP = auto() # Required but it is not a path
+	O_NP = auto() # Optional but it is not a path
 
 
 ####################################
@@ -78,5 +80,5 @@ COMMAND_INPUT = {
 		(INPUT_FLAG.R, POSSIBLE_INPUTS.FEB_FILE), \
 		(INPUT_FLAG.O, POSSIBLE_INPUTS.PROPERTIES_FOLDER), \
 		(INPUT_FLAG.O, POSSIBLE_INPUTS.OUTPUT_FOLDER),
-		(INPUT_FLAG.O, POSSIBLE_INPUTS.SELECTED_PROPERTIES)]
+		(INPUT_FLAG.O_NP, POSSIBLE_INPUTS.SELECTED_PROPERTIES)]
 }

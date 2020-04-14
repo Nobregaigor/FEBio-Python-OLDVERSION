@@ -7,32 +7,45 @@ class FEBio_soup():
 		self.path_to_file = path_to_feb_file
 
 		# --------------------
-		# Initialize object
-		self.read_content()
-
-		# --------------------
 		# Set main tags:
 		# Globals:
-		self.globals = self.soup.Globals
-		self.control = self.soup.Control
-		self.loads = self.soup.Loads
-		self.boundary = self.soup.Boundary
-		self.load_data = self.soup.LoadData
-		self.output = self.soup.Output
+		self.globals = None
+		self.control = None
+		self.loads = None
+		self.boundary = None
+		self.load_data = None
+		self.output = None
 		# Material:
-		self.materials = self.soup.Material.find_all("material") if self.soup.Material != None else None
-		self.material = self.soup.Material.material if self.soup.Material != None else None
+		self.materials = None
+		self.material = None
 		# Geometry
-		self.geometry = self.soup.Geometry
-		self.nodes = self.soup.Geometry.Nodes if self.soup.Geometry != None else None
-		self.elements = self.soup.Geometry.Elements if self.soup.Geometry != None else None
-		self.node_sets = self.soup.Geometry.find_all("NodeSet") if self.soup.Geometry != None else None
-		self.surfaces = self.soup.Geometry.find_all("Surface") if self.soup.Geometry != None else None
+		self.geometry = None
+		self.nodes = None
+		self.elements = None
+		self.node_sets = None
+		self.surfaces = None
+
+		# Order in which outer tags should be placed
+		self.props_order = ['control', 'material', 'globals', 'geometry', 'boundary', 'loads',  'output', 'loaddata', 'meshdata']
+		self.existing_tags = None
+
+		# --------------------
+		# Initialize object
+		self.was_initialized = False
+		self.initialize()
 
 
 	#############################
 	# general methods
 	#############################
+
+	def initialize(self):
+		if not self.was_initialized:
+			self.read_content()
+			self.set_tags_obj_ref(is_initializing=True)
+			self.was_initialized = True
+		else:
+			pass
 
 	# Method that reads and creates a soup from a xml content (path to file given from object)
 	def read_content(self):
@@ -41,6 +54,68 @@ class FEBio_soup():
 			# Due limitations on bs4 and ISO-8859-1 encoding, skip first line
 			self.header = feb_file.readline()
 			self.soup = BeautifulSoup(feb_file.read(), "xml")
+
+	def set_tags_obj_ref(self, is_initializing=False):
+		if is_initializing:
+			print("Setting attributes:")
+		else:
+			print("Searching for new attr to create ref in FEBio_soup.")
+		if self.globals == None:
+			if self.soup.Globals != None:
+				print("- Found: globals")
+				self.globals = self.soup.Globals
+		if self.control == None:
+			if self.soup.Control != None:
+				print("- Found: control")
+				self.control = self.soup.Control
+		if self.boundary == None:
+			if self.soup.Boundary != None:
+				print("- Found: boundary")
+				self.boundary = self.soup.Boundary
+		if self.loads == None:
+			if self.soup.Loads != None:
+				print("- Found: loads")
+				self.loads = self.soup.Loads
+		if self.output == None:
+			if self.soup.Output != None:
+				print("- Found: output")
+				self.output = self.soup.Output
+		if self.materials == None:
+			materials = self.soup.Material.find_all("material") if self.soup.Material != None else None
+			if materials != None:
+				print("- Found: materials")
+				self.materials = materials
+		if self.material == None:
+			material = self.soup.Material.material if self.soup.Material != None else None
+			if material != None:
+				print("- Found: material")
+				self.material = material
+		if self.geometry == None:
+			if self.soup.Geometry != None:
+				print("- Found: geometry")
+				self.geometry = self.soup.Geometry
+		if self.nodes == None:
+			nodes = self.soup.Geometry.Nodes if self.soup.Geometry != None else None
+			if nodes != None:
+				print("- Found: nodes")
+				self.nodes = nodes
+		if self.elements == None:
+			elements = self.soup.Geometry.Elements if self.soup.Geometry != None else None
+			if elements != None:
+				print("- Found: elements")
+				self.elements = elements
+		if self.node_sets == None:
+			node_sets = self.soup.Geometry.find_all("NodeSet") if self.soup.Geometry != None else None
+			if node_sets != None:
+				print("- Found: node_sets")
+				self.node_sets = node_sets
+		if self.surfaces == None:
+			surfaces = self.soup.Geometry.find_all("Surface") if self.soup.Geometry != None else None
+			if surfaces != None:
+				print("- Found: surfaces")
+				self.surfaces = surfaces
+
+		self.existing_tags = list(tag.name for tag in self.soup.febio_spec.find_all() if tag.parent.name is self.soup.febio_spec.name)
 
 	# Method that transforms soup to string in a pretty manner
 	def get_prettified(self):
@@ -52,14 +127,16 @@ class FEBio_soup():
 
 	# Method that transforms an xml string into a soup content
 	def make_soup(self,content):
-		print("Making content a soup.")
 		# Convert content to a soup (should be in xml format)
 		if not isinstance(content, BeautifulSoup): # If content is not already a BeautifulSoup
 			try:
+				print("Making content a soup.")
 				content = BeautifulSoup(content, "xml")
 				return content
 			except:
 				raise(ValueError("Content provided cannot be converted to BeautifulSoup"))
+		else:
+			return content 
 
 	#############################
 	# Modify tag methods
@@ -68,7 +145,7 @@ class FEBio_soup():
 	# Method that adds a tag to main soup and set a new attr
 	def add_tag(self, tag, content, insert_pos=1):
 		print("Adding tag", tag, "to FEBio_soup.")
-		if hasattr(self,tag):
+		if hasattr(self,tag) and getattr(self,tag) != None:
 			print("*** Warning: FEBio_soup already has tag", tag, ". Changing it with change_tag_content.")
 			self.change_tag_content(tag,content)
 		else:
@@ -100,12 +177,46 @@ class FEBio_soup():
 	# Method to change the content of a given tag from main soup
 	def change_tag_content(self, tag, content):
 		print("Changing content from tag", tag,"at FEBio_soup.")
+		content = self.make_soup(content)
 		if not hasattr(self,tag):
 			print("*** Warning: FEBio_soup does not have tag", tag, ". Adding it to the main soup.")
 			self.add_tag(tag,content)
 		else:
 			_tag = getattr(self,tag)
-			_tag.replace_with(self.make_soup(content))
+			if _tag == None:
+				print("*** Warning: FEBio_soup does not have tag", tag, ". Adding it to the main soup.")
+				self.add_tag(tag,content)
+			else:
+				if content != None:
+					_tag.replace_with(content)
+
+	# Method to insert a blob of tag with content
+	def insert_tag(self,tag_with_content, insert_pos=1, check_input_order=True):
+		_tag = tag_with_content.findChildren()[0]
+		_tag_name = _tag.name.lower()
+		print("Inserting tag:", _tag.name, " in soup.")
+		if hasattr(self,_tag_name) and getattr(self,_tag_name) != None:
+			print("*** Warning: FEBio_soup already has tag:", _tag_name,". Changing its content with change_tag_content")
+			self.change_tag_content(_tag_name, tag_with_content)
+		else:
+			if check_input_order is True:		
+				if _tag_name in self.props_order:
+					props_idx = self.props_order.index(_tag_name)
+					if props_idx == 0:
+						insert_pos = 1
+					elif props_idx == len(self.props_order) -1:
+						insert_pos = -1
+					else:
+						l_existing_tags = [a.lower() for a in self.existing_tags]
+						for tag_to_find in reversed(self.props_order[:props_idx]):
+							if tag_to_find in l_existing_tags:
+								insert_pos = l_existing_tags.index(tag_to_find) + 4 # Not sure why +4
+								break
+
+			self.soup.febio_spec.insert(insert_pos, tag_with_content)
+
+			if (hasattr(self,_tag_name) and getattr(self,_tag_name) == None) or _tag_name in self.props_order:
+				self.set_tags_obj_ref()
 
 	#############################
 	# Modify attributes methods
@@ -183,7 +294,7 @@ class FEBio_soup():
 
 	# Method that writes the pretified version (required to be a string) of the main soup
 	def write_feb(self,path_to_output_folder, file_name):
-		print("Writing feb.")
 		with open(join(path_to_output_folder,file_name), 'w') as file:
-			# file.write(self.header)
-			file.write(self.get_prettified())
+			prefitied_soup = self.get_prettified()
+			print("Writing feb.")
+			file.write(prefitied_soup)
