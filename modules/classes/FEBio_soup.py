@@ -117,9 +117,16 @@ class FEBio_soup():
 
 		self.existing_tags = list(tag.name for tag in self.soup.febio_spec.find_all() if tag.parent.name is self.soup.febio_spec.name)
 
+	def check_if_file_can_run(self):
+		# Make sure that it has <Module type="solid" />
+		self.insert_tag(BeautifulSoup('<Module type="solid" />', "xml"), insert_pos=1, check_input_order=False)
+		# Make sure that material has mat="1"
+		self.add_attr('elements','mat',"1")
+
 	# Method that transforms soup to string in a pretty manner
 	def get_prettified(self):
 		print("prettifying soup.")
+		self.check_if_file_can_run()
 		content = prettify_xml(self.soup.prettify())
 		content = self.header.rstrip() + content[content.find(">")+1:]
 		# print(content)
