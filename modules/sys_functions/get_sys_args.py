@@ -1,9 +1,9 @@
 import sys, getopt
 import os
-from os.path import isfile, isdir
+from os.path import isfile, isdir, isabs, join
 from pathlib import Path
 
-from .. enums import COMMAND_INPUT, POSSIBLE_INPUTS, INPUT_FLAG, INPUT_DEFAULTS
+from .. enums import COMMAND_INPUT, POSSIBLE_INPUTS, INPUT_FLAG, INPUT_DEFAULTS, PATH_TO_STORAGE
 
 def get_input_arguments():
 	print("\nAsserting inputs...")
@@ -46,6 +46,10 @@ def get_input_arguments():
 				print("*** Warning:", _name,"was not provided. Falling back to default value:",default_value)
 		else:
 			_user_input = user_inputs[user_inputs_upper_case.index(_name) + 1]
+
+		# Check if input is a absolute or local path. If not add full path to storage
+		if not isabs(_user_input):
+			_user_input = join(PATH_TO_STORAGE, _user_input)
 
 		# Check if it is a file or path to directory
 		if _name.find("FILE") != -1:

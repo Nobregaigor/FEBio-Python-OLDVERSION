@@ -18,6 +18,20 @@ def add_properties_to_feb(inputs):
 	# print(febio_soup.output)
 	# print(febio_soup.node_sets)
 
+	febio_soup.add_tag("hello","<div>hey</div>",0)
+	febio_soup.add_attr("hello", "type","heyhey")
+	febio_soup.add_attr("hello", "type","HUEHUE")
+
+	# febio_soup.add_tag("hello","<div>HUEHUEHUEHU</div>",0)
+	# febio_soup.add_tag("hello", "type","heuheu")
+
+	# febio_soup.change_tag_content("HEY","<div>HUEHUE</div>")
+
+	febio_soup.remove_tag("HEY",_all=True)
+
+
+	# print(febio_soup.soup)
+
 	febio_soup.write_feb(path_o_folder, "test.feb")
 
 
