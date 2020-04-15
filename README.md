@@ -57,7 +57,7 @@ List of items that I need to complete:
 - [ ] Create function ADD_FIBERS
 - [x] Create function EXTRACT_NODES
 - [x] Create function CREATE_LOADCURVE
-- [ ] Create function CALCULATE_FIBERS
+- [x] Create function CALCULATE_FIBERS
 - [ ] Create function CALCULATE_RESULTS
 - [ ] Create function MAKE_REPORT (type: MESH_STUDY)
 
