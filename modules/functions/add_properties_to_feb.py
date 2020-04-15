@@ -12,10 +12,10 @@ def add_properties_to_feb(inputs):
 
 	# Get inputs
 	if POSSIBLE_INPUTS.FEB_FILE in inputs:
-		print("Insert in file")
-		path_feb_files = [inputs[POSSIBLE_INPUTS.FEB_FILE]]
+		path_to_feb = inputs[POSSIBLE_INPUTS.FEB_FILE]
+		feb_filename = path_to_feb.split("\\")[-1]
+		path_feb_files = [(path_to_feb, feb_filename,feb_filename[:-4])]
 	else:
-		print("Insert in folder")
 		path_feb_files = find_files(inputs[POSSIBLE_INPUTS.INPUT_FOLDER],("fileFormat","feb"))
 
 	# path_feb_file = inputs[POSSIBLE_INPUTS.FEB_FILE]
