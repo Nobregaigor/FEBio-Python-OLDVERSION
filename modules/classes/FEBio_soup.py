@@ -315,7 +315,20 @@ class FEBio_soup():
 	#############################
 
 	def get_geometry_data(self):
-		return self.nodes, self.elements
+		nodes = []
+		elems = []
+		for node in self.nodes.findChildren():
+			a = [node['id']]
+			a.extend([float(b) for b in str(node.string).split(",")])
+			nodes.append(a)
+
+		for elem in self.elements.findChildren():
+			a = [elem['id']]
+			a.extend([float(b) for b in str(elem.string).split(",")])
+			elems.append(a)
+
+
+		return nodes, elems
 
 	#############################
 	# Writing methods

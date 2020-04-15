@@ -43,6 +43,7 @@ possible_commands = [
 	"CREATE_LOADCURVE",
 	"ADD_LOAD",
 	"EXTRACT_GEOMETRY_DATA", # nodes and elements
+	"CALCULATE_FIBERS",
 ]
 
 # Convert the possible commands list to an Enums class
@@ -60,6 +61,7 @@ possible_inputs = [
 	"FEB_FOLDER",
 	"OUTPUT_FOLDER",
 	"INPUT_FOLDER",
+	"FEB_NAME",
 
 	# ADD_PROPERTIES
 	"PROPERTIES_FOLDER",
@@ -80,11 +82,13 @@ possible_inputs = [
 
 	# EXTRACT_GEOMETRY_DATA,
 	# None new inputs
+	"GEOMETRY_DATA_FOLDER",
+	"PATH_TO_MATLAB_FOLDER"
+
 ]
 
 # Convert the possible inputs list to an Enum class
 POSSIBLE_INPUTS = Enum('POSSIBLE_INPUTS', {a:auto() for a in possible_inputs})
-
 
 ######################################
 # RELATE COMMANDS AND INPUTS
@@ -133,5 +137,13 @@ COMMAND_INPUT = {
 		(INPUT_FLAG.O1, POSSIBLE_INPUTS.INPUT_FOLDER), 
 		(INPUT_FLAG.O, POSSIBLE_INPUTS.OUTPUT_FOLDER), 
 	],
+
+	# CALCULATE_FIBERS
+	POSSIBLE_COMMANDS.CALCULATE_FIBERS: [
+		(INPUT_FLAG.O_NP, POSSIBLE_INPUTS.FEB_NAME), 
+		(INPUT_FLAG.O, POSSIBLE_INPUTS.GEOMETRY_DATA_FOLDER), 
+		(INPUT_FLAG.O, POSSIBLE_INPUTS.OUTPUT_FOLDER), 
+		(INPUT_FLAG.O, POSSIBLE_INPUTS.PATH_TO_MATLAB_FOLDER), 
+	]
 
 }
