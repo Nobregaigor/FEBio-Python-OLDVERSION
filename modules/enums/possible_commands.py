@@ -27,6 +27,9 @@ class INPUT_FLAG(Enum):
 	O = auto() #  Optional
 	R_NP = auto() # Required but it is not a path
 	O_NP = auto() # Optional but it is not a path
+	R1 = auto() # Required if optional is not found
+	O1 = auto() # Optional that can substitue required
+
 
 
 ####################################
@@ -53,6 +56,7 @@ possible_inputs = [
 	"FIBER_TABLES_FILE",
 	"FEB_FOLDER",
 	"OUTPUT_FOLDER",
+	"INPUT_FOLDER",
 
 	# ADD_PROPERTIES
 	"PROPERTIES_FOLDER",
@@ -77,7 +81,8 @@ COMMAND_INPUT = {
 
 	# ADD_PROPERTIES
 	POSSIBLE_COMMANDS.ADD_PROPERTIES: [\
-		(INPUT_FLAG.R, POSSIBLE_INPUTS.FEB_FILE), \
+		(INPUT_FLAG.R1, POSSIBLE_INPUTS.FEB_FILE), \
+		(INPUT_FLAG.O1, POSSIBLE_INPUTS.INPUT_FOLDER), \
 		(INPUT_FLAG.O, POSSIBLE_INPUTS.PROPERTIES_FOLDER), \
 		(INPUT_FLAG.O, POSSIBLE_INPUTS.OUTPUT_FOLDER),
 		(INPUT_FLAG.O_NP, POSSIBLE_INPUTS.SELECTED_PROPERTIES)]

@@ -55,31 +55,40 @@ class FEBio_soup():
 			self.header = feb_file.readline()
 			self.soup = BeautifulSoup(feb_file.read(), "xml")
 
+	def update_existing_tags(self):
+		self.existing_tags = list(tag.name for tag in self.soup.febio_spec.find_all() if tag.parent.name is self.soup.febio_spec.name)
+		self.l_existing_tags = [a.lower() for a in self.existing_tags]
+
 	def set_tags_obj_ref(self, is_initializing=False):
 		if is_initializing:
 			print("Setting attributes:")
 		else:
 			print("Searching for new attr to create ref in FEBio_soup.")
 		if self.globals == None:
-			if self.soup.Globals != None:
+			_globals = self.soup.Globals
+			if _globals != None:
 				print("- Found: globals")
-				self.globals = self.soup.Globals
+				self.globals = _globals
 		if self.control == None:
-			if self.soup.Control != None:
+			_control = self.soup.Control
+			if _control != None:
 				print("- Found: control")
-				self.control = self.soup.Control
+				self.control = _control
 		if self.boundary == None:
-			if self.soup.Boundary != None:
+			_boundary = self.soup.Boundary
+			if _boundary != None:
 				print("- Found: boundary")
-				self.boundary = self.soup.Boundary
+				self.boundary = _boundary
 		if self.loads == None:
-			if self.soup.Loads != None:
+			_loads = self.soup.Loads
+			if _loads != None:
 				print("- Found: loads")
-				self.loads = self.soup.Loads
+				self.loads = _loads
 		if self.output == None:
-			if self.soup.Output != None:
+			_output = self.soup.Output
+			if _output != None:
 				print("- Found: output")
-				self.output = self.soup.Output
+				self.output = _output
 		if self.materials == None:
 			materials = self.soup.Material.find_all("material") if self.soup.Material != None else None
 			if materials != None:
@@ -91,9 +100,10 @@ class FEBio_soup():
 				print("- Found: material")
 				self.material = material
 		if self.geometry == None:
-			if self.soup.Geometry != None:
+			_geometry = self.soup.Geometry
+			if _geometry != None:
 				print("- Found: geometry")
-				self.geometry = self.soup.Geometry
+				self.geometry = _geometry
 		if self.nodes == None:
 			nodes = self.soup.Geometry.Nodes if self.soup.Geometry != None else None
 			if nodes != None:
@@ -115,7 +125,7 @@ class FEBio_soup():
 				print("- Found: surfaces")
 				self.surfaces = surfaces
 
-		self.existing_tags = list(tag.name for tag in self.soup.febio_spec.find_all() if tag.parent.name is self.soup.febio_spec.name)
+		self.update_existing_tags()
 
 	def check_if_file_can_run(self):
 		# Make sure that it has <Module type="solid" />
@@ -214,16 +224,20 @@ class FEBio_soup():
 					elif props_idx == len(self.props_order) -1:
 						insert_pos = -1
 					else:
-						l_existing_tags = [a.lower() for a in self.existing_tags]
+						# l_existing_tags = [a.lower() for a in self.existing_tags]
 						for tag_to_find in reversed(self.props_order[:props_idx]):
-							if tag_to_find in l_existing_tags:
-								insert_pos = l_existing_tags.index(tag_to_find) + 4 # Not sure why +4
+							if tag_to_find in self.l_existing_tags:
+								insert_pos = self.l_existing_tags.index(tag_to_find) + 4 # Not sure why +4
 								break
 
 			self.soup.febio_spec.insert(insert_pos, tag_with_content)
 
+			if (hasattr(self,_tag_name) and getattr(self,_tag_name) == None):
+				setattr(self,_tag_name, getattr(self.soup, _tag.name))
+				print("- Found:", _tag_name)
+			
 			if (hasattr(self,_tag_name) and getattr(self,_tag_name) == None) or _tag_name in self.props_order:
-				self.set_tags_obj_ref()
+				self.update_existing_tags()
 
 	#############################
 	# Modify attributes methods

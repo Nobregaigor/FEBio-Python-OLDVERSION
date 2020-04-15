@@ -32,19 +32,34 @@ def get_input_arguments():
 	
 	# Check inputs. Inputs should be declared as INPUT_NAME INPUT_VALUE ...
 	inputs = {}
+	balance_of_R1_O1 = 0
+	R1_input = ""
+	O1_input = ""
+	_user_input = ""
+
 	for inp in needed_inputs:
 		_type = inp[0]
 		_name = inp[1].name
+
 
 		# Check required inputs
 		if _name not in user_inputs_upper_case:
 			if _type == INPUT_FLAG.R:
 				raise(AssertionError("Input needed not found:", _name))
+			elif _type == INPUT_FLAG.R1:
+				balance_of_R1_O1 -= 1
+				R1_input = _name
+				continue
 			else:
+				if _type == INPUT_FLAG.O1:
+					balance_of_R1_O1 += 1
+					O1_input = _name
 				default_value = INPUT_DEFAULTS[command][inp[1]]
 				_user_input = inputs[POSSIBLE_INPUTS[_name]] = INPUT_DEFAULTS[command][inp[1]]
 				print("*** Warning:", _name,"was not provided. Falling back to default value:",default_value)
 		else:
+			if _type == INPUT_FLAG.R1 or _type == INPUT_FLAG.O1:
+				balance_of_R1_O1 += 1
 			_user_input = user_inputs[user_inputs_upper_case.index(_name) + 1]
 
 		# Check if input is a absolute or local path. If not add full path to storage
@@ -62,6 +77,12 @@ def get_input_arguments():
 				raise(AssertionError("Input folder: ", _name, "is not a valid folder. Please check arguments and try again."))
 
 		inputs[POSSIBLE_INPUTS[_name]] = _user_input
+	# check if balance is zero
+	if balance_of_R1_O1 != 0:
+		if balance_of_R1_O1 > 0:
+			print("*** Warning: Multple inputs for same arg were found. Required value will be used:", R1_input)
+		else:
+			raise(AssertionError("Input needed not found:", R1_input,". This input can be substitute by:", O1_input))
 
 	print("Input arguments found:")
 	for inp in inputs:

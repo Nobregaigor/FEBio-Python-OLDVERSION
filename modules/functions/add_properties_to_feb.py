@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from copy import copy
 
 from .. enums import POSSIBLE_INPUTS
 from .. sys_functions.find_files_in_folder import find_files
@@ -10,7 +11,14 @@ def add_properties_to_feb(inputs):
 	print("\nAdding properties...")
 
 	# Get inputs
-	path_feb_file = inputs[POSSIBLE_INPUTS.FEB_FILE]
+	if POSSIBLE_INPUTS.FEB_FILE in inputs:
+		print("Insert in file")
+		path_feb_files = [inputs[POSSIBLE_INPUTS.FEB_FILE]]
+	else:
+		print("Insert in folder")
+		path_feb_files = find_files(inputs[POSSIBLE_INPUTS.INPUT_FOLDER],("fileFormat","feb"))
+
+	# path_feb_file = inputs[POSSIBLE_INPUTS.FEB_FILE]
 	path_p_folder = inputs[POSSIBLE_INPUTS.PROPERTIES_FOLDER]
 	path_o_folder = inputs[POSSIBLE_INPUTS.OUTPUT_FOLDER]
 	selected_prop = inputs[POSSIBLE_INPUTS.SELECTED_PROPERTIES].lower()
@@ -40,10 +48,12 @@ def add_properties_to_feb(inputs):
 			if file[2] in selected_files:
 				properties.append( (file[2], read_xml(file[0])) )
 
-	# Create FEBio_soup instace
-	febio_soup = FEBio_soup(path_feb_file)
-	# Insert properties as tags for each selected property
-	for prop in properties:
-		febio_soup.insert_tag(prop[1])
-	# Write new feb file at given folder
-	febio_soup.write_feb(path_o_folder, "test.feb")
+	for path_feb_file in path_feb_files:
+		# Create FEBio_soup instace
+		print("\n--> Adding properties to:", path_feb_file[2])
+		febio_soup = FEBio_soup(path_feb_file[0])
+		# Insert properties as tags for each selected property
+		for prop in properties:
+			febio_soup.insert_tag(copy(prop[1]))
+		# Write new feb file at given folder
+		febio_soup.write_feb(path_o_folder, path_feb_file[1])
