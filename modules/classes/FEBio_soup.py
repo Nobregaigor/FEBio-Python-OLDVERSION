@@ -129,7 +129,8 @@ class FEBio_soup():
 
 	def check_if_file_can_run(self):
 		# Make sure that it has <Module type="solid" />
-		self.insert_tag(BeautifulSoup('<Module type="solid" />', "xml"), insert_pos=1, check_input_order=False)
+		if self.soup.find("Module") == None:
+			self.insert_tag(BeautifulSoup('<Module type="solid" />', "xml"), insert_pos=1, check_input_order=False)
 		# Make sure that material has mat="1"
 		self.add_attr('elements','mat',"1")
 
@@ -162,7 +163,7 @@ class FEBio_soup():
 	# Method that adds a tag to main soup and set a new attr
 	def add_tag(self, tag, content, insert_pos=1):
 		print("Adding tag", tag, "to FEBio_soup.")
-		if hasattr(self,tag) and getattr(self,tag) != None:
+		if hasattr(self,tag.lower()) and getattr(self,tag.lower()) != None:
 			print("*** Warning: FEBio_soup already has tag", tag, ". Changing it with change_tag_content.")
 			self.change_tag_content(tag,content)
 		else:
@@ -195,17 +196,17 @@ class FEBio_soup():
 	def change_tag_content(self, tag, content):
 		print("Changing content from tag", tag,"at FEBio_soup.")
 		content = self.make_soup(content)
-		if not hasattr(self,tag):
+		if not hasattr(self,tag.lower()):
 			print("*** Warning: FEBio_soup does not have tag", tag, ". Adding it to the main soup.")
 			self.add_tag(tag,content)
 		else:
-			_tag = getattr(self,tag)
+			_tag = getattr(self,tag.lower())
 			if _tag == None:
 				print("*** Warning: FEBio_soup does not have tag", tag, ". Adding it to the main soup.")
 				self.add_tag(tag,content)
 			else:
 				if content != None:
-					_tag.replace_with(content)
+					_tag.contents[0].replace_with(content)
 
 	# Method to insert a blob of tag with content
 	def insert_tag(self,tag_with_content, insert_pos=1, check_input_order=True):
@@ -295,7 +296,7 @@ class FEBio_soup():
 
 	# General method to modify an attribute, if ref and attr exists. Gets ref from get_attr
 	def change_attr(self,tag, attr, value, sub_tags=None, is_ref=False):
-		print("Changing attr:", attr,", in tag:", tag)
+		# print("Changing attr:", attr,", in tag:", tag)
 		# tag is the tag of the FEBio_soup object
 		# attr is the attribute tag that will be modified
 

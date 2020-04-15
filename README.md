@@ -60,3 +60,12 @@ List of items that I need to complete:
 - [ ] Create function CALCULATE_RESULTS
 - [ ] Create function MAKE_REPORT (type: MESH_STUDY)
 
+
+
+
+main.py CREATE_LOADCURVE CURVE_NAME teste CURVE_MODEL polynomial CURVE_PARAMS {'coeff':[-944,245,0],'t_initial':0,'t_final':0.2,'resolution':100,'plot':True}
+
+main.py CREATE_LOADCURVE CURVE_NAME endocardio_loadcurve CURVE_MODEL polynomial CURVE_PARAMS {'coeff':[-944,245,0],'t_initial':0,'t_final':0.2,'resolution':100,'plot':False} 
+
+
+main.py ADD_LOAD FEB_FILE raw\myo_tet_4_coarse_1.feb LOAD_NAME endocardio

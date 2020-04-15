@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from copy import copy
 
 from .. enums import POSSIBLE_INPUTS
@@ -8,7 +7,7 @@ from .. classes import FEBio_soup
 
 
 def add_properties_to_feb(inputs): 
-	print("\nAdding properties...")
+	print("\n== Adding properties ==")
 
 	# Get inputs
 	if POSSIBLE_INPUTS.FEB_FILE in inputs:
