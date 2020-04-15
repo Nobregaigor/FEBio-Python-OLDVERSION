@@ -53,9 +53,10 @@ List of items that I need to complete:
 - [x] Create function to capture and understand sys inputs
 - [x] Create class to modify feb files
 - [x] Create function ADD_PROPERTIES
-- [ ] Create function ADD_LOADCURVE
+- [x] Create function ADD_LOADCURVE (need to be redone in furture)
 - [ ] Create function ADD_FIBERS
 - [ ] Create function EXTRACT_NODES
+- [x] Create function CREATE_LOADCURVE
 - [ ] Create function CALCULATE_FIBERS
 - [ ] Create function CALCULATE_RESULTS
 - [ ] Create function MAKE_REPORT (type: MESH_STUDY)
