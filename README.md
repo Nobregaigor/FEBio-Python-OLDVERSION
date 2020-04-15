@@ -55,7 +55,7 @@ List of items that I need to complete:
 - [x] Create function ADD_PROPERTIES
 - [x] Create function ADD_LOADCURVE (need to be redone in furture)
 - [ ] Create function ADD_FIBERS
-- [ ] Create function EXTRACT_NODES
+- [x] Create function EXTRACT_NODES
 - [x] Create function CREATE_LOADCURVE
 - [ ] Create function CALCULATE_FIBERS
 - [ ] Create function CALCULATE_RESULTS
