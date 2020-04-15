@@ -46,3 +46,17 @@ Add properties to all files found in default INPUT_FOLDER:
 
 Add properties to all files found in default INPUT_FOLDER but excludes the "loads" property:
 > main.py ADD_PROPERTIES
+
+
+## TODO:
+List of items that I need to complete:
+- [x] Create function to capture and understand sys inputs
+- [x] Create class to modify feb files
+- [x] Create function ADD_PROPERTIES
+- [ ] Create function ADD_LOADCURVE
+- [ ] Create function ADD_FIBERS
+- [ ] Create function EXTRACT_NODES
+- [ ] Create function CALCULATE_FIBERS
+- [ ] Create function CALCULATE_RESULTS
+- [ ] Create function MAKE_REPORT (type: MESH_STUDY)
+
