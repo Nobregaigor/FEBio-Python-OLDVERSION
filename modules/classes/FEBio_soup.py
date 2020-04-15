@@ -311,6 +311,13 @@ class FEBio_soup():
 		self.change_attr("material",attr,value)
 
 	#############################
+	# Extracting methods
+	#############################
+
+	def get_geometry_data(self):
+		return self.nodes, self.elements
+
+	#############################
 	# Writing methods
 	#############################
 

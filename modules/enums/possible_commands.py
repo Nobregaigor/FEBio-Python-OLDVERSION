@@ -42,6 +42,7 @@ possible_commands = [
 	"ADD_FIBERS",
 	"CREATE_LOADCURVE",
 	"ADD_LOAD",
+	"EXTRACT_GEOMETRY_DATA", # nodes and elements
 ]
 
 # Convert the possible commands list to an Enums class
@@ -76,6 +77,9 @@ possible_inputs = [
 	"LOAD_NAME",
 	"LOAD_ATTRS",
 	"LOAD_TYPE",
+
+	# EXTRACT_GEOMETRY_DATA,
+	# None new inputs
 ]
 
 # Convert the possible inputs list to an Enum class
@@ -121,6 +125,13 @@ COMMAND_INPUT = {
 		(INPUT_FLAG.R_NP, POSSIBLE_INPUTS.LOAD_NAME), 
 		(INPUT_FLAG.O, POSSIBLE_INPUTS.LOAD_FOLDER), 
 		(INPUT_FLAG.O_NP, POSSIBLE_INPUTS.LOAD_ATTRS), 
+	],
+
+	# EXTRACT_GEOMETRY_DATA
+	POSSIBLE_COMMANDS.EXTRACT_GEOMETRY_DATA: [
+		(INPUT_FLAG.R1, POSSIBLE_INPUTS.FEB_FILE), 
+		(INPUT_FLAG.O1, POSSIBLE_INPUTS.INPUT_FOLDER), 
+		(INPUT_FLAG.O, POSSIBLE_INPUTS.OUTPUT_FOLDER), 
 	],
 
 }
