@@ -47,9 +47,22 @@ Add properties to all files found in default INPUT_FOLDER:
 Add properties to all files found in default INPUT_FOLDER but excludes the "loads" property:
 > main.py ADD_PROPERTIES
 
+#### CREATE_LOADCURVE
 
+> main.py CREATE_LOADCURVE CURVE_NAME teste CURVE_MODEL polynomial CURVE_PARAMS {'coeff':[-944,245,0],'t_initial':0,'t_final':0.2,'resolution':100,'plot':True}
+
+> main.py CREATE_LOADCURVE CURVE_NAME endocardio_loadcurve CURVE_MODEL polynomial CURVE_PARAMS {'coeff':[-944,245,0],'t_initial':0,'t_final':0.2,'resolution':100,'plot':False} 
+
+
+#### ADD_LOAD
+
+> main.py ADD_LOAD FEB_FILE raw\myo_tet_4_coarse_1.feb LOAD_NAME endocardio
+
+
+
+---
 ## TODO:
-List of items that I need to complete:
+List of items that I need to complete (Phase 1):
 - [x] Create function to capture and understand sys inputs
 - [x] Create class to modify feb files
 - [x] Create function ADD_PROPERTIES
@@ -58,15 +71,8 @@ List of items that I need to complete:
 - [x] Create function EXTRACT_NODES
 - [x] Create function CREATE_LOADCURVE
 - [x] Create function CALCULATE_FIBERS
-- [ ] Create function CALCULATE_RESULTS
-- [ ] Create function MAKE_REPORT (type: MESH_STUDY)
+- [X] Create function CALCULATE_RESULTS
+- [x] Create function RUN_FEB
 
 
 
-
-main.py CREATE_LOADCURVE CURVE_NAME teste CURVE_MODEL polynomial CURVE_PARAMS {'coeff':[-944,245,0],'t_initial':0,'t_final':0.2,'resolution':100,'plot':True}
-
-main.py CREATE_LOADCURVE CURVE_NAME endocardio_loadcurve CURVE_MODEL polynomial CURVE_PARAMS {'coeff':[-944,245,0],'t_initial':0,'t_final':0.2,'resolution':100,'plot':False} 
-
-
-main.py ADD_LOAD FEB_FILE raw\myo_tet_4_coarse_1.feb LOAD_NAME endocardio
