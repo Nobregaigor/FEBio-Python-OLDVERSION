@@ -71,7 +71,8 @@ List of items that I need to complete (Phase 1):
 - [x] Create function EXTRACT_NODES
 - [x] Create function CREATE_LOADCURVE
 - [x] Create function CALCULATE_FIBERS
-- [X] Create function CALCULATE_RESULTS
+- [ ] Create function CALCULATE_RESULTS
+- [ ] Create function PROCESS_RESULTS
 - [x] Create function RUN_FEB
 
 
