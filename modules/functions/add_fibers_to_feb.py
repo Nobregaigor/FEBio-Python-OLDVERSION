@@ -60,7 +60,7 @@ def add_fibers_to_feb(inputs):
 	
 		# Read data and format to create soup (due limitations in bs4, and, since this is pretty much an
 		# immutable tag, we will be using it as a string that will be converted to a soup)
-		df_fibers = pd.read_csv(f[0], header=None)
+		df_fibers = pd.read_csv(fibers[0], header=None)
 		meshdata = format_data_to_write(df_fibers)
 
 		febio_soup = FEBio_soup(p[0])
