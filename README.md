@@ -54,7 +54,7 @@ List of items that I need to complete:
 - [x] Create class to modify feb files
 - [x] Create function ADD_PROPERTIES
 - [x] Create function ADD_LOADCURVE (need to be redone in furture)
-- [ ] Create function ADD_FIBERS
+- [x] Create function ADD_FIBERS
 - [x] Create function EXTRACT_NODES
 - [x] Create function CREATE_LOADCURVE
 - [x] Create function CALCULATE_FIBERS
