@@ -3,8 +3,10 @@ from os.path import join
 from prettierfier import prettify_xml
 
 class FEBio_soup():
-	def __init__(self, path_to_feb_file):
+	def __init__(self, path_to_feb_file, skip_tag_inspector=False):
 		self.path_to_file = path_to_feb_file
+
+		self.skip_tag_inspector = skip_tag_inspector
 
 		# --------------------
 		# Set main tags:
@@ -42,7 +44,8 @@ class FEBio_soup():
 	def initialize(self):
 		if not self.was_initialized:
 			self.read_content()
-			self.set_tags_obj_ref(is_initializing=True)
+			# if self.skip_tag_inspector == False:
+			self.set_tags_obj_ref(is_initializing=True)				
 			self.was_initialized = True
 		else:
 			pass
@@ -136,9 +139,12 @@ class FEBio_soup():
 
 	# Method that transforms soup to string in a pretty manner
 	def get_prettified(self):
-		print("prettifying soup.")
 		self.check_if_file_can_run()
-		content = prettify_xml(self.soup.prettify())
+		print("prettifying soup.")
+		# soup = self.soup.prettify()
+		print("pretifying xml.")
+		# content = prettify_xml(str(self.soup))
+		content = str(self.soup)
 		content = self.header.rstrip() + content[content.find(">")+1:]
 		# print(content)
 		return content
@@ -336,6 +342,7 @@ class FEBio_soup():
 
 	# Method that writes the pretified version (required to be a string) of the main soup
 	def write_feb(self,path_to_output_folder, file_name):
+		file_name = file_name + ".feb" if file_name[-4:] != ".feb" else file_name
 		with open(join(path_to_output_folder,file_name), 'w') as file:
 			prefitied_soup = self.get_prettified()
 			print("Writing feb.")
