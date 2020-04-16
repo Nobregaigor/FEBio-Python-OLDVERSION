@@ -3,6 +3,9 @@ from os.path import join
 from .possible_commands import POSSIBLE_COMMANDS, POSSIBLE_INPUTS
 import pathlib
 
+import json
+from .. jsons import *
+
 OUTPUT_FOLDER_DEFAULT_KEY = hash("OUTPUT_FOLDER")
 
 STORAGE_DIR = join("Active","storage")
@@ -50,7 +53,10 @@ INPUT_DEFAULTS = {
 	},
 	POSSIBLE_COMMANDS.RUN_FEB: {
 		POSSIBLE_INPUTS.INPUT_FOLDER: join(PATH_TO_STORAGE, "with_fibers"),
-	}
+	},
+	POSSIBLE_COMMANDS.CREATE_STORAGE_FOLDER: {
+		POSSIBLE_INPUTS.PATH_TO_STORAGE: join(WORKING_DIR.parents[0], "Active"),
+	},
 }
 
 

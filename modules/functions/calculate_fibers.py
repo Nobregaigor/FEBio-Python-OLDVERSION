@@ -1,5 +1,5 @@
 import subprocess
-import difflib
+from difflib import get_close_matches as close_matches
 
 from .. enums import POSSIBLE_INPUTS
 from .. sys_functions.find_files_in_folder import find_files
@@ -32,8 +32,8 @@ def calculate_fibers(inputs):
 		elem_file = [f for f in elems_files if f[2].split("_elems")[0] == fname][0]
 
 		if len(nodes_files_hex) > 0:
-			node_file_hex = [f for f in nodes_files_hex if len(difflib.get_close_matches(fname, [f[2].split("_nodes")[0]])) > 0][0]
-			elem_file_hex = [f for f in elems_files_hex if len(difflib.get_close_matches(fname, [f[2].split("_elems")[0]])) > 0][0]
+			node_file_hex = [f for f in nodes_files_hex if len(close_matches(fname, [f[2].split("_nodes")[0]])) > 0][0]
+			elem_file_hex = [f for f in elems_files_hex if len(close_matches(fname, [f[2].split("_elems")[0]])) > 0][0]
 		else:
 			node_file_hex = node_file
 			elem_file_hex = elem_file

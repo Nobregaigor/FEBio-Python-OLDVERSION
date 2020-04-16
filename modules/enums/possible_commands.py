@@ -47,6 +47,7 @@ possible_commands = [
 	"ADD_FIBERS",
 	"PREPARE",
 	"RUN_FEB",
+	"CREATE_STORAGE_FOLDER",
 ]
 
 # Convert the possible commands list to an Enums class
@@ -89,6 +90,10 @@ possible_inputs = [
 	"PATH_TO_MATLAB_FOLDER",
 
 	"FIBERS_DATA_FOLDER",
+
+	# CREATE_STORAGE_FOLDER
+	"STORAGE_NAME",
+	"PATH_TO_STORAGE",
 ]
 
 # Convert the possible inputs list to an Enum class
@@ -169,6 +174,12 @@ COMMAND_INPUT = {
 	POSSIBLE_COMMANDS.RUN_FEB: [
 		(INPUT_FLAG.R1, POSSIBLE_INPUTS.FEB_FILE), 
 		(INPUT_FLAG.O1, POSSIBLE_INPUTS.INPUT_FOLDER), 
+	],
+	
+	# CREATE_STORAGE_FOLDER: 
+	POSSIBLE_COMMANDS.CREATE_STORAGE_FOLDER: [
+		(INPUT_FLAG.R_NP, POSSIBLE_INPUTS.STORAGE_NAME), 
+		(INPUT_FLAG.O, POSSIBLE_INPUTS.PATH_TO_STORAGE), 
 	],
 
 }
