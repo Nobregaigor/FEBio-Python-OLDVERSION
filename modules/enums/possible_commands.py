@@ -48,6 +48,7 @@ possible_commands = [
 	"PREPARE",
 	"RUN_FEB",
 	"CREATE_STORAGE_FOLDER",
+	"CALCULATE_RESULTS"
 ]
 
 # Convert the possible commands list to an Enums class
@@ -182,4 +183,8 @@ COMMAND_INPUT = {
 		(INPUT_FLAG.O, POSSIBLE_INPUTS.PATH_TO_STORAGE), 
 	],
 
+	# CALCULATE_RESULTS
+	POSSIBLE_COMMANDS.CALCULATE_RESULTS: [
+		(INPUT_FLAG.O, POSSIBLE_INPUTS.INPUT_FOLDER), 
+	]
 }
