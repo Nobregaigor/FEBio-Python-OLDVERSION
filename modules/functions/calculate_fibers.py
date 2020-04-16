@@ -1,9 +1,11 @@
 import subprocess
 from difflib import get_close_matches as close_matches
+from ast import literal_eval
 
 from .. enums import POSSIBLE_INPUTS
 from .. sys_functions.find_files_in_folder import find_files
 from .. sys_functions.read_files import read_xml
+
 
 def calculate_fibers(inputs):
 	print("\n== Calculating fibers ==")
@@ -13,6 +15,9 @@ def calculate_fibers(inputs):
 	geom_d_folder = inputs[POSSIBLE_INPUTS.GEOMETRY_DATA_FOLDER]
 	path_o_folder = inputs[POSSIBLE_INPUTS.OUTPUT_FOLDER]
 	path_m_folder = inputs[POSSIBLE_INPUTS.PATH_TO_MATLAB_FOLDER]
+	matlab_params = literal_eval(inputs[POSSIBLE_INPUTS.MATLAB_PARAMS])
+
+	# print(matlab_params)
 
 	# Get avaiable files 
 	files = find_files(geom_d_folder,("fileFormat","csv"))
@@ -38,8 +43,8 @@ def calculate_fibers(inputs):
 			node_file_hex = node_file
 			elem_file_hex = elem_file
 
-		theta_endo = 75
-		theta_epi = -45
+		theta_endo = matlab_params['endo']
+		theta_epi = matlab_params['epi']
 
 		print(node_file[0])
 		print(elem_file[0])

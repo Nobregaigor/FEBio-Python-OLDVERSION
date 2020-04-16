@@ -1,7 +1,9 @@
-
+from copy import copy
 from os.path import join
 from .. enums import POSSIBLE_INPUTS, POSSIBLE_COMMANDS, INPUT_DEFAULTS, PATH_TO_STORAGE
-# from .. enums import *
+from .. sys_functions.find_files_in_folder import find_files
+from .. sys_functions.read_files import read_xml
+from .. classes import FEBio_soup
 
 
 from .add_properties_to_feb import add_properties_to_feb
@@ -10,6 +12,7 @@ from .add_loadcurve_to_feb import add_loadcurve_to_feb
 from .extract_geometry_data_from_feb import extract_geometry_data_from_feb
 from .calculate_fibers import calculate_fibers
 from .add_fibers_to_feb import add_fibers_to_feb
+from .run_feb import run_feb
 
 def prepare_feb(inputs):
 
@@ -19,57 +22,88 @@ def prepare_feb(inputs):
 	# fibers_data -> with_load
 
 	# Set commands in order to be executed
-	# to_execute = [
-	# 	# Part 1: Raw -> with_properties -> with_load
-	# 	COMMAND_FUNCTION[POSSIBLE_COMMANDS.ADD_PROPERTIES],
-	# 	COMMAND_FUNCTION[POSSIBLE_COMMANDS.ADD_LOAD],
-	# 	# Part 2: Raw -> geometry_data -> fibers_data
-	# 	COMMAND_FUNCTION[POSSIBLE_COMMANDS.EXTRACT_GEOMETRY_DATA],
-	# 	COMMAND_FUNCTION[POSSIBLE_COMMANDS.CALCULATE_FIBERS],
-	# 	# Part 3: fibers_data -> with_properties
-	# 	COMMAND_FUNCTION[POSSIBLE_COMMANDS.ADD_FIBERS],
-	# 	# Part 4: fibers_data -> with_load
-	# 	COMMAND_FUNCTION[POSSIBLE_COMMANDS.ADD_FIBERS],
-	# ]
 
-	# Set commands in order to be executed
-	to_execute = [
-		# Part 1: Raw -> with_properties -> with_load
+	# Set fiber variations:
+
+	fibers_variations = [45, 50, 55, 60, 65, 70, 75, 80, 85]
+
+
+	#########################################
+	# Set order of functions to be executed
+	#########################################
+
+	# Part 1: prepare to calculate fibers
+	to_execute_1 = [
 		add_properties_to_feb,
 		add_loadcurve_to_feb,
-		# Part 2: Raw -> geometry_data -> fibers_data
 		extract_geometry_data_from_feb,
-		calculate_fibers,
-		# Part 3: fibers_data -> with_properties
+	]
+
+	# Part 2: calculate fibers
+	to_execute_2 = [calculate_fibers] * len(fibers_variations)
+
+	# Part 3: add fibers
+	to_execute_3 = [
 		add_fibers_to_feb,
-		# Part 4: fibers_data -> with_load
 		add_fibers_to_feb,
 	]
 
-	# Set inputs in order to be executed
-	inputs = [
-		# Part 1:
+	# Par 4: run feb
+	to_execute_4 = [
+		run_feb
+	]
+
+	#########################################
+	# Set inputs of functions to be executed
+	#########################################
+
+	to_input_1 = [
 		INPUT_DEFAULTS[POSSIBLE_COMMANDS.ADD_PROPERTIES],
 		INPUT_DEFAULTS[POSSIBLE_COMMANDS.ADD_LOAD],
-		# Part 2:
 		INPUT_DEFAULTS[POSSIBLE_COMMANDS.EXTRACT_GEOMETRY_DATA],
-		INPUT_DEFAULTS[POSSIBLE_COMMANDS.CALCULATE_FIBERS],
-		# Part 3:
+	]
+
+	to_input_2 = []
+	for i, fib_dir in enumerate(fibers_variations):
+		to_input_2.append(copy(INPUT_DEFAULTS[POSSIBLE_COMMANDS.CALCULATE_FIBERS]))
+		to_input_2[i][POSSIBLE_INPUTS.MATLAB_PARAMS] = "{endo:" + str(-fib_dir) +",epi:" + str(fib_dir) + "}"
+
+	to_input_3 = [
 		{
 			POSSIBLE_INPUTS.INPUT_FOLDER: join(PATH_TO_STORAGE, "with_properties"),
 			POSSIBLE_INPUTS.OUTPUT_FOLDER: join(PATH_TO_STORAGE,"with_fibers")
 		},
-		# Part 4:
 		{
 			POSSIBLE_INPUTS.INPUT_FOLDER: join(PATH_TO_STORAGE, "with_load"),
 			POSSIBLE_INPUTS.OUTPUT_FOLDER: join(PATH_TO_STORAGE,"with_fibers")
-		}
+		},
 	]
+
+	to_input_4 = [
+		{
+		},
+	]
+
+	#########################################
+	# Combine actions
+	#########################################
+
+	to_execute = []
+	to_execute.extend(to_execute_1)
+	to_execute.extend(to_execute_2)
+	to_execute.extend(to_execute_3)
+	to_execute.extend(to_execute_4)
+
+	to_input = []
+	to_input.extend(to_input_1)
+	to_input.extend(to_input_2)
+	to_input.extend(to_input_3)
+	to_input.extend(to_input_4)
 
 	# Execute commands with given inputs
 
-	for i, command in enumerate(to_execute):
-		command(inputs[i])
+	# for i, command in enumerate(to_execute):
+	# 	command(to_input[i])
 
 def execute_prepare_feb(inputs):
 	prepare_feb(inputs)

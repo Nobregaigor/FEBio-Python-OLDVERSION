@@ -58,25 +58,29 @@ def add_fibers_to_feb(inputs):
 		print("\n--> Adding fibers to:",fname)
 
 		output_filename = fname if "load" not in p[0] else "with_load_" + fname 
-		# print(p[0])
-		print(output_filename)
 		
-		for f in fibers_files:
-			if fname in f[2]:
-				fibers = f
-				# fibers_files.remove(f)
-				break
-	
-		# Read data and format to create soup (due limitations in bs4, and, since this is pretty much an
-		# immutable tag, we will be using it as a string that will be converted to a soup)
-		print("Reading csv file.")
-		df_fibers = pd.read_csv(fibers[0], header=None)
-		meshdata = format_data_to_write(df_fibers)
+		# Match all existing files:
+		matched_fibers = [f for f in fibers_files if fname in f[2]]
 
-		febio_soup = FEBio_soup(p[0])
-		meshdata_soup = febio_soup.make_soup(meshdata)
-		febio_soup.insert_tag(meshdata_soup)
-		# Make directory for new file
-		_path = join(path_o_folder,output_filename)
-		Path(_path).mkdir(parents=True, exist_ok=True)
-		febio_soup.write_feb(_path, output_filename)
+			# for f in fibers_files:
+			# 	if fname in f[2]:
+			# 		fibers = f
+			# 		# fibers_files.remove(f)
+			# 		break
+
+		for fibers in matched_fibers:
+			output_filename += "_" + fibers[2].split('_o_')[-1].split('.')[0]
+		
+			# Read data and format to create soup (due limitations in bs4, and, since this is pretty much an
+			# immutable tag, we will be using it as a string that will be converted to a soup)
+			print("Reading csv file.")
+			df_fibers = pd.read_csv(fibers[0], header=None)
+			meshdata = format_data_to_write(df_fibers)
+
+			febio_soup = FEBio_soup(p[0])
+			meshdata_soup = febio_soup.make_soup(meshdata)
+			febio_soup.insert_tag(meshdata_soup)
+			# Make directory for new file
+			_path = join(path_o_folder,output_filename)
+			Path(_path).mkdir(parents=True, exist_ok=True)
+			febio_soup.write_feb(_path, output_filename)

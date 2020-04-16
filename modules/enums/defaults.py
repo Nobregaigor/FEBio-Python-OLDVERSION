@@ -8,7 +8,7 @@ from .. jsons import *
 
 OUTPUT_FOLDER_DEFAULT_KEY = hash("OUTPUT_FOLDER")
 
-STORAGE_DIR = join("Active","storage")
+STORAGE_DIR = join("Active","Mesh_study_2")
 WORKING_DIR = pathlib.Path().absolute()
 
 PATH_TO_STORAGE = join(WORKING_DIR.parents[0], STORAGE_DIR)
@@ -40,7 +40,8 @@ INPUT_DEFAULTS = {
 		POSSIBLE_INPUTS.FEB_NAME: "all",
 		POSSIBLE_INPUTS.GEOMETRY_DATA_FOLDER: join(PATH_TO_STORAGE,"geometry_data"),
 		POSSIBLE_INPUTS.OUTPUT_FOLDER: join(PATH_TO_STORAGE,"fibers_data"),
-		POSSIBLE_INPUTS.PATH_TO_MATLAB_FOLDER: join(WORKING_DIR, "matlab_functions")
+		POSSIBLE_INPUTS.PATH_TO_MATLAB_FOLDER: join(WORKING_DIR, "matlab_functions"),
+		POSSIBLE_INPUTS.MATLAB_PARAMS: "{'endo':45,'epi':75}",
 	},
 	POSSIBLE_COMMANDS.ADD_FIBERS: {
 		POSSIBLE_INPUTS.INPUT_FOLDER: join(PATH_TO_STORAGE, "with_properties"),

@@ -62,7 +62,6 @@ def add_loadcurve_to_feb(inputs):
 		# Insert properties as tags for each selected property
 		for header in headers:
 			print("--- Adding header")
-			print(header)
 			febio_soup.add_tag("Loads", copy(header[1]))
 
 		for load in loads:

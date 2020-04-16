@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 from os.path import join
 from prettierfier import prettify_xml
+from xml.dom.minidom import parseString
+import re
 
 class FEBio_soup():
 	def __init__(self, path_to_feb_file, skip_tag_inspector=False):
@@ -144,7 +146,12 @@ class FEBio_soup():
 		# soup = self.soup.prettify()
 		print("pretifying xml.")
 		# content = prettify_xml(str(self.soup))
-		content = str(self.soup)
+		content = parseString(str(self.soup))
+		content = content.toprettyxml(indent='	')
+
+		lines = content.split("\n")
+		content = "\n".join(line for line in lines if line.strip() != "")
+		
 		content = self.header.rstrip() + content[content.find(">")+1:]
 		# print(content)
 		return content
@@ -167,12 +174,27 @@ class FEBio_soup():
 	#############################
 
 	# Method that adds a tag to main soup and set a new attr
-	def add_tag(self, tag, content, insert_pos=1):
+	def add_tag(self, tag, content, insert_pos=1, check_input_order=True):
 		print("Adding tag", tag, "to FEBio_soup.")
 		if hasattr(self,tag.lower()) and getattr(self,tag.lower()) != None:
 			print("*** Warning: FEBio_soup already has tag", tag, ". Changing it with change_tag_content.")
 			self.change_tag_content(tag,content)
 		else:
+			if check_input_order is True:		
+				if tag.lower() in self.props_order:
+					props_idx = self.props_order.index(tag.lower())
+					if props_idx == 0:
+						insert_pos = 1
+					elif props_idx == len(self.props_order) -1:
+						insert_pos = -1
+					else:
+						# l_existing_tags = [a.lower() for a in self.existing_tags]
+						for tag_to_find in reversed(self.props_order[:props_idx]):
+							if tag_to_find in self.l_existing_tags:
+								insert_pos = self.l_existing_tags.index(tag_to_find) + 5 # Not sure why +5
+								print("insert_pos",insert_pos,"tag_to_find",tag_to_find)
+								break
+
 			# Convert content to a soup (should be in xml format)
 			content = self.make_soup(content)
 
