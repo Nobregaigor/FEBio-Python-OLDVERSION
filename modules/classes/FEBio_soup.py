@@ -58,6 +58,7 @@ class FEBio_soup():
 		with open(self.path_to_file,"r") as feb_file:
 			# Due limitations on bs4 and ISO-8859-1 encoding, skip first line
 			self.header = feb_file.readline()
+			# Read rest of the lines:
 			self.soup = BeautifulSoup(feb_file.read(), "xml")
 
 	def update_existing_tags(self):
@@ -145,12 +146,35 @@ class FEBio_soup():
 		print("prettifying soup.")
 		# soup = self.soup.prettify()
 		print("pretifying xml.")
-		# content = prettify_xml(str(self.soup))
-		content = parseString(str(self.soup))
-		content = content.toprettyxml(indent='	')
+		content = prettify_xml(str(self.soup))
 
-		lines = content.split("\n")
-		content = "\n".join(line for line in lines if line.strip() != "")
+		# s = ""
+		# ident_level = -1
+		# previous_name = ""
+		# content = ""
+		# for i in self.soup:
+		# 	new_name = i.name
+
+		# 	i = str(i)
+		# 	print(new_name, previous_name)
+		# 	if new_name != previous_name:
+		# 		ident_level = ident_level + 1 if "<\\" not in i else ident_level -1
+			
+		# 	s = "\t" * ident_level if ident_level > 0 else ""
+		# 	s += i
+		# 	content += s
+		# 	previous_name = new_name
+
+		# content = parseString(str(self.soup))
+
+		# for c in content:
+			
+		# 	print(c.toprettyxml(indent='	'))
+		# content = content.toprettyxml(indent='	')
+
+		# print("removing extra lines.")
+		# lines = content.split("\n")
+		# content = "\n".join(line for line in lines if line.strip() != "")
 		
 		content = self.header.rstrip() + content[content.find(">")+1:]
 		# print(content)

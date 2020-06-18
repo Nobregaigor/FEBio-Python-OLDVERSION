@@ -6,7 +6,7 @@ from os.path import join
 from .. enums import POSSIBLE_INPUTS
 from .. sys_functions.find_files_in_folder import find_files
 from .. sys_functions.read_files import read_xml
-from .. classes import FEBio_soup, FEBio_xml_parser
+from .. classes import FEBio_soup
 
 
 def format_data_to_write(data):
@@ -16,7 +16,7 @@ def format_data_to_write(data):
 	data_to_write.append('\t\t<ElementData elem_set="Part1" var="mat_axis">\n')
 	template = '\t\t\t<elem lid="{_id}">\n\t\t\t\t<a>{_f0}</a>\n\t\t\t\t<d>{_s0}</d>\n\t\t\t</elem>\n'
 	for row in data.itertuples():
-		fid = str(row[2])
+		fid = str(row[0] + 1)
 		f0 = ','.join(str(val) for val in row[3:6])
 		s0 = ','.join(str(val) for val in row[6:9])
 		data_to_write.append(template.format(_id=fid, _f0=f0, _s0=s0))
@@ -24,13 +24,13 @@ def format_data_to_write(data):
 	data_to_write.append("\t\t</ElementData>\n")
 	data_to_write.append('\t</MeshData>\n')
 
-	s = ""
-	s = s.join(data_to_write)
+	# s = ""
+	# s = s.join(data_to_write)
 
-	return s
+	return data_to_write
 
 
-def add_fibers_to_feb(inputs):
+def add_fibers_to_feb2(inputs):
 	print("\n== Adding Fibers ==")
 
 	# Get inputs
@@ -60,9 +60,7 @@ def add_fibers_to_feb(inputs):
 		global_output_filename = fname if "load" not in p[0] else "with_load_" + fname 
 		
 		# Match all existing files:
-		match_fname = fname.replace("hex","tet_4") if fname.find("hex") != -1 else fname
-		print("matched name:", match_fname)
-		matched_fibers = [f for f in fibers_files if match_fname in f[2]]
+		matched_fibers = [f for f in fibers_files if fname in f[2]]
 
 			# for f in fibers_files:
 			# 	if fname in f[2]:
@@ -79,13 +77,30 @@ def add_fibers_to_feb(inputs):
 			# immutable tag, we will be using it as a string that will be converted to a soup)
 			print("Reading csv file.")
 			df_fibers = pd.read_csv(fibers[0], header=None)
-			# meshdata = format_data_to_write(df_fibers)
+			meshdata = format_data_to_write(df_fibers)
 
-			febio_soup = FEBio_xml_parser.FEBio_xml_parser(p[0])
-			# meshdata_soup = febio_soup.parse(meshdata)
-			# febio_soup.add_tag(meshdata)
-			febio_soup.add_fibers(df_fibers)
+			# read FEB file
+			print("Reading feb file...")
+			with open(p[0], 'r') as no_fiber_FEB_file:
+				feb_file_content = no_fiber_FEB_file.readlines()
+			
+			# For simplicity, mesh data will be inputed as the last element before the closing line of the feb file
+			end_file = feb_file_content[-1]
+			feb_file_content.pop(-1)
+			feb_file_content.extend(meshdata)
+			feb_file_content.append(end_file)
+
 			# Make directory for new file
 			_path = join(path_o_folder,output_filename)
 			Path(_path).mkdir(parents=True, exist_ok=True)
-			febio_soup.write_feb(_path, output_filename)
+
+			# write new file:
+			print("Writing feb file with fibers...")
+			with open(join(_path, output_filename + ".feb"),'w') as with_fibers_file:
+				with_fibers_file.writelines(feb_file_content)
+
+
+			# febio_soup = FEBio_soup(p[0])
+			# meshdata_soup = febio_soup.make_soup(meshdata)
+			# febio_soup.insert_tag(meshdata_soup)
+			# febio_soup.write_feb(_path, output_filename)

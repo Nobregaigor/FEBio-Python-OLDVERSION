@@ -12,6 +12,7 @@ from .add_loadcurve_to_feb import add_loadcurve_to_feb
 from .extract_geometry_data_from_feb import extract_geometry_data_from_feb
 from .calculate_fibers import calculate_fibers
 from .add_fibers_to_feb import add_fibers_to_feb
+from .add_fibers_to_feb2 import add_fibers_to_feb2
 from .run_feb import run_feb
 
 def prepare_feb(inputs):
@@ -25,7 +26,9 @@ def prepare_feb(inputs):
 
 	# Set fiber variations:
 
-	fibers_variations = [45, 50, 55, 60, 65, 70, 75, 80, 85]
+	# fibers_variations = [45, 50, 55, 60, 65, 70, 75, 80, 85]
+	fibers_variations = [60]
+
 
 
 	#########################################
@@ -44,8 +47,8 @@ def prepare_feb(inputs):
 
 	# Part 3: add fibers
 	to_execute_3 = [
-		add_fibers_to_feb,
-		add_fibers_to_feb,
+		add_fibers_to_feb2,
+		add_fibers_to_feb2,
 	]
 
 	# Par 4: run feb
@@ -66,22 +69,25 @@ def prepare_feb(inputs):
 	to_input_2 = []
 	for i, fib_dir in enumerate(fibers_variations):
 		to_input_2.append(copy(INPUT_DEFAULTS[POSSIBLE_COMMANDS.CALCULATE_FIBERS]))
-		to_input_2[i][POSSIBLE_INPUTS.MATLAB_PARAMS] = "{endo:" + str(-fib_dir) +",epi:" + str(fib_dir) + "}"
+		to_input_2[i][POSSIBLE_INPUTS.MATLAB_PARAMS] = "{'endo':" + str(-fib_dir) +",'epi':" + str(fib_dir) + "}"
+		# to_input_2[i][POSSIBLE_INPUTS.MATLAB_PARAMS] = "{'endo':" + str(-fib_dir) +",'epi':" + str(fib_dir) + "}"
+
 
 	to_input_3 = [
 		{
 			POSSIBLE_INPUTS.INPUT_FOLDER: join(PATH_TO_STORAGE, "with_properties"),
-			POSSIBLE_INPUTS.OUTPUT_FOLDER: join(PATH_TO_STORAGE,"with_fibers")
+			POSSIBLE_INPUTS.OUTPUT_FOLDER: join(PATH_TO_STORAGE,"with_fibers"),
+			POSSIBLE_INPUTS.FIBERS_DATA_FOLDER: join(PATH_TO_STORAGE, "fibers_data"),
 		},
 		{
 			POSSIBLE_INPUTS.INPUT_FOLDER: join(PATH_TO_STORAGE, "with_load"),
-			POSSIBLE_INPUTS.OUTPUT_FOLDER: join(PATH_TO_STORAGE,"with_fibers")
+			POSSIBLE_INPUTS.OUTPUT_FOLDER: join(PATH_TO_STORAGE,"with_fibers"),
+			POSSIBLE_INPUTS.FIBERS_DATA_FOLDER: join(PATH_TO_STORAGE, "fibers_data"),
 		},
 	]
 
 	to_input_4 = [
-		{
-		},
+		INPUT_DEFAULTS[POSSIBLE_COMMANDS.RUN_FEB],
 	]
 
 	#########################################
@@ -102,8 +108,8 @@ def prepare_feb(inputs):
 
 	# Execute commands with given inputs
 
-	# for i, command in enumerate(to_execute):
-	# 	command(to_input[i])
+	for i, command in enumerate(to_execute):
+		command(to_input[i])
 
 def execute_prepare_feb(inputs):
 	prepare_feb(inputs)

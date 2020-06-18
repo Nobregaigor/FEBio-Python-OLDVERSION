@@ -1,4 +1,14 @@
 
+% NODES_FILE = "C:\Users\IgorNobrega\University of South Florida\Mao, Wenbin - Myocardium (organized)\Active\Hex_mesh_study\geometry_data\myo_tet_4_study_1_nodes.csv"
+% ELEMENTS_FILE = "C:\Users\IgorNobrega\University of South Florida\Mao, Wenbin - Myocardium (organized)\Active\Hex_mesh_study\geometry_data\myo_tet_4_study_1_elems.csv"
+% NODES_FILE_HEX = "C:\Users\IgorNobrega\University of South Florida\Mao, Wenbin - Myocardium (organized)\Active\Hex_mesh_study\geometry_data\myo_hex_1_study_1_nodes.csv"
+% ELEMENTS_FILE_HEX = "C:\Users\IgorNobrega\University of South Florida\Mao, Wenbin - Myocardium (organized)\Active\Hex_mesh_study\geometry_data\myo_hex_1_study_1_elems.csv"
+% THETA_ENDO = -60
+% THETA_EPI = 60
+% OUTPUT_FOLDER_FILENAME = "C:\Users\IgorNobrega\University of South Florida\Mao, Wenbin - Myocardium (organized)\Active\Hex_mesh_study\fibers_data"
+
+% calculate_fibers_orientation(NODES_FILE, ELEMENTS_FILE, NODES_FILE_HEX, ELEMENTS_FILE_HEX, THETA_ENDO, THETA_EPI, OUTPUT_FOLDER_FILENAME)
+
 function calculate_fibers_orientation(NODES_FILE, ELEMENTS_FILE, NODES_FILE_HEX, ELEMENTS_FILE_HEX, THETA_ENDO, THETA_EPI, OUTPUT_FOLDER_FILENAME)
 %% Define Macros
 
@@ -6,8 +16,8 @@ apex = [0, 0, -75];
 base = [0, 0 , 20];
 k = base - apex;
 
-THETA_ENDO = 75;
-THETA_EPI = -45;
+% THETA_ENDO = 75;
+% THETA_EPI = -45;
 
 
 %% Load Model
@@ -29,9 +39,9 @@ THETA_EPI = -45;
 % if we want to explore non-ideal cases, we must come up with a better
 % logic...
 % *****
-[baseFace, endoFace, epicFace] = getFacesIds(model,mesh,apex,base)
+[baseFace, endoFace, epicFace] = getFacesIds(model,mesh,apex,base);
 
-apply_bcs(model,baseFace,endoFace,epicFace) %base, endocardio, epicardio
+apply_bcs(model,baseFace,endoFace,epicFace); %base, endocardio, epicardio
 % apply_bcs(model,2,4,3) %base, endocardio, epicardio <-- work for
 % quarter models
 
@@ -186,7 +196,10 @@ function [elem_c] = calculate_centers(nodes_hex,elems_hex)
     L = length(elems_hex);
     elem_c=zeros(L,3);
     for i=1:L
-        elem_c(i,:) = mean(nodes_hex(elems_hex(i,:),:),1);
+        non_zero_elems = [];
+        elems_line =(elems_hex(i,:));
+        for j=1:length(elems_line), if elems_line(j) > 0, non_zero_elems(j) = elems_line(j); end; end        
+        elem_c(i,:) = mean(nodes_hex(non_zero_elems,:),1);
     end
     
     fprintf('Centers calculated.\n\n')

@@ -33,12 +33,15 @@ def calculate_fibers(inputs):
 
 	for node_file in nodes_files:
 		fname = node_file[2].split("_nodes")[0]
+		print("\n--> Calculating fibers for:", fname)
 
 		elem_file = [f for f in elems_files if f[2].split("_elems")[0] == fname][0]
 
 		if len(nodes_files_hex) > 0:
 			node_file_hex = [f for f in nodes_files_hex if len(close_matches(fname, [f[2].split("_nodes")[0]])) > 0][0]
 			elem_file_hex = [f for f in elems_files_hex if len(close_matches(fname, [f[2].split("_elems")[0]])) > 0][0]
+			print("-Using node hex file:", node_file_hex[2])
+			print("-Using elem hex file:", elem_file_hex[2])
 		else:
 			node_file_hex = node_file
 			elem_file_hex = elem_file
@@ -46,10 +49,14 @@ def calculate_fibers(inputs):
 		theta_endo = matlab_params['endo']
 		theta_epi = matlab_params['epi']
 
-		print(node_file[0])
-		print(elem_file[0])
-		print(node_file_hex[0])
-		print(elem_file_hex[0])
+		print("Theta_endo:", theta_endo)
+		print("Theta_epi: ", theta_epi)
+
+
+		# print(node_file[0])
+		# print(elem_file[0])
+		# print(node_file_hex[0])
+		# print(elem_file_hex[0])
 
 
 		params = "'"+ node_file[0] + "'" + ',' + "'"+ elem_file[0] + "'" + ',' + \
@@ -57,9 +64,9 @@ def calculate_fibers(inputs):
 			str(theta_endo) + ',' + str(theta_epi) + ',' + \
 			"'" + path_o_folder + "\\" + fname + "'"
 
-		print(params)
+		# print(params)
 
-
+		print("Openning MATLAB...")
 		res = subprocess.call([
 		"matlab.exe",
 		"-wait",
@@ -70,5 +77,6 @@ def calculate_fibers(inputs):
 		'/r',
 		'"cd'+ " '" + path_m_folder + "'; " + "calc_fibers("+params+");" + ' exit"'
 		])
+
 		if res != 0:
 			print(res)
