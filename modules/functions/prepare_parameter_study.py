@@ -43,6 +43,7 @@ def prepare_parameter_study(inputs):
 	params_order = [param for param in data["parameters"]]
 
 	print("order:", params_order)
+	print("data:", data)
 
 	for (fp, ff, fn) in path_feb_files:
 		file_counter = 0
@@ -50,7 +51,8 @@ def prepare_parameter_study(inputs):
 			a = data["parameters"][parameter]
 			a_start = a["range"][0]
 			a_end = a["range"][1]
-			a_n = (a_end - a_start) / a["step_size"]
+			a_n = int(np.floor((a_end - a_start) / a["step_size"]))
+
 			for val1 in np.linspace(a_start, a_end, a_n):
 
 				for j, parameter2 in enumerate(params_order):
@@ -59,7 +61,10 @@ def prepare_parameter_study(inputs):
 						b = data["parameters"][parameter2]
 						b_start = b["range"][0]
 						b_end = b["range"][1]
-						b_n = (b_end - b_start) / b["step_size"]
+						# b_n = (b_end - b_start) / b["step_size"]
+						b_n = int(np.floor((b_end - b_start) / b["step_size"]))
+						# print("b_n",b_n)
+
 
 						for val2 in np.linspace(b_start, b_end, b_n):
 							print(parameter, val1, "|", parameter2, val2)

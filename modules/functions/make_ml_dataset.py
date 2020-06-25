@@ -3,7 +3,7 @@ import csv
 import re
 import pandas as pd
 from os.path import join
-
+from sys import stdout 
 from .. enums import POSSIBLE_INPUTS, POSSIBLE_COMMANDS, INPUT_DEFAULTS, PATH_TO_STORAGE
 from .. sys_functions.find_files_in_folder import find_files
 
@@ -13,6 +13,10 @@ HEADER_TIM = ['time']
 HEADER_STR = ['sx','sy','sz','sxy','sxz','syz']
 HEADER_DIS = ['ux','uy','uz']
 HEADER_POS = ['x','y','z']
+HEADER_FAL = ['fail']
+
+# define last simulation timestamp
+LAST_TIMESTAMP = 0.2
 
 def includeNodeNumberInHeader(header):
 	clock = 0
@@ -30,6 +34,7 @@ def includeNodeNumberInHeader(header):
 def create_header():
 	a = HEADER_PAR
 	a.extend(HEADER_TIM)
+	a.extend(HEADER_FAL)
 	a.extend(includeNodeNumberInHeader(HEADER_POS))
 	a.extend(includeNodeNumberInHeader(HEADER_DIS))
 	a.extend(HEADER_STR)
@@ -112,7 +117,6 @@ def make_ml_dataset(inputs):
 	params = get_param_val(param_file[0])
 	for i in range(10):
 		print("key:", i, "a,b:", params[i])
-	# print(params)
 
 	# create dataframe
 	print("-- Creating dataframe")
@@ -120,6 +124,8 @@ def make_ml_dataset(inputs):
 	df = pd.DataFrame(columns=header)
 	rowCounter = 0
 	fileCounter = 0
+
+	print("-- Filling dataframe")
 	for i, key in enumerate(baseDict):
 
 		if key in params:
@@ -127,16 +133,21 @@ def make_ml_dataset(inputs):
 			dis_data = decode_data(dis_files[key][0])
 			pos_data = decode_data(pos_files[key][0])
 
-			for time in str_data.keys():
-				df.loc[rowCounter] = params[key] + [time] + pos_data[time] + dis_data[time] + str_data[time]
+			org_keys = sorted(str_data.keys())
+
+			last_timestamp = org_keys[-1]
+			failed = 1 if float(last_timestamp) != LAST_TIMESTAMP else 0
+
+			for time in org_keys:
+				df.loc[rowCounter] = params[key] + [time] + [failed] + pos_data[time] + dis_data[time] + str_data[time]
 				rowCounter += 1
 
-
+		stdout.write(".")
+		stdout.flush()
 		if i % 100 == 0 and i != 0:
-			print("Batch: #", fileCounter, "->", i/baseDictLength,"%")
+			print("\nBatch: #", fileCounter, "->", i/baseDictLength,"%")
 			# show
 			print(df)
-			print("...")
 		# save 
 			df.to_pickle(join(out_folder,"data%s.pickle" % fileCounter))
 			# create new instance
@@ -144,14 +155,7 @@ def make_ml_dataset(inputs):
 			# print(df)
 			rowCounter = 0
 			fileCounter += 1
-	
 
-	# for key in str_files:
-
-
-	# for i, time in enumerate(data):
-	# 	df.loc[i] = [time] + data[time]
-	# 	# print(len([time] + data[time]))
 
 	print(df)
 
