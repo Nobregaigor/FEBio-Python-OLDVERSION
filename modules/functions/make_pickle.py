@@ -2,10 +2,16 @@
 import csv
 import re
 import pandas as pd
-from os.path import join
+from os.path import join, exists
+from os import mkdir
+from os import remove as remove_file
 from sys import stdout 
+import zipfile
+
 from .. enums import POSSIBLE_INPUTS, POSSIBLE_COMMANDS, INPUT_DEFAULTS, PATH_TO_STORAGE
 from .. sys_functions.find_files_in_folder import find_files
+
+
 
 # define headers
 HEADER_PAR = ['a','b']
@@ -67,13 +73,30 @@ def get_param_val(file):
 			params[i] = [float(v) for v in row[-1].split(";")]
 	return params
 
-def make_ml_dataset(inputs):
-	print("== MAKE ML DATASET ==")
+def compile_data(files):
+	frames = []
+	total_files = len(files)
+	for i, (fp, _, _) in enumerate(files):
+		ndf = pd.read_pickle(fp)
+		frames.append(ndf)
+		print("compiled pickle: ", (i + 1) /total_files)
+		df = pd.concat(frames, ignore_index=True)
+	return df
+
+def make_pickle(inputs):
+	print("== MAKE PICKLE ==")
 
 	# Get files
 	print("-- Getting input files")
 	inp_folder = inputs[POSSIBLE_INPUTS.INPUT_FOLDER]
 	out_folder = inputs[POSSIBLE_INPUTS.OUTPUT_FOLDER]
+
+	temp_folder = join(inp_folder,"tmp")
+	if not exists(temp_folder):
+		mkdir(temp_folder)
+
+	# zipfile handler
+	zipf = zipfile.ZipFile(join(out_folder,'zipped_data.zip'), 'w', zipfile.ZIP_DEFLATED)
 
 	files = find_files(inp_folder, ("fileFormat","txt"))
 	csv_files = find_files(inp_folder, ("fileFormat","csv"))
@@ -84,11 +107,11 @@ def make_ml_dataset(inputs):
 		else:
 			raise(AssertionError("modified_params_log file not found."))
 
+	# -----------------
 	# organize files:
 	str_files = {}
 	dis_files = {}
 	pos_files = {}
-
 	print("-- Sorting files")
 	for (fp, ff, fn) in files:
 		fs = fn.split("_")
@@ -103,9 +126,10 @@ def make_ml_dataset(inputs):
 			str_files[key] = (fp, ff, fn)
 		elif fs[0] == 'position':
 			pos_files[key] = (fp, ff, fn)
-
 	files = [str_files, dis_files, pos_files]
 
+	# -----------------
+	# Determining critial values
 	print("-- Checking lengths")
 	lengths = [len(l) for l in files]
 	idxmin = lengths.index(min(lengths)) 
@@ -115,16 +139,17 @@ def make_ml_dataset(inputs):
 	# get param values
 	print("-- Getting params")
 	params = get_param_val(param_file[0])
-	for i in range(10):
-		print("key:", i, "a,b:", params[i])
 
+	# -----------------
 	# create dataframe
 	print("-- Creating dataframe")
-	header = columns=create_header()
+	header = create_header()
 	df = pd.DataFrame(columns=header)
 	rowCounter = 0
 	fileCounter = 0
 
+	# -----------------
+	# creating temporary pickles
 	print("-- Filling dataframe")
 	for i, key in enumerate(baseDict):
 
@@ -145,18 +170,30 @@ def make_ml_dataset(inputs):
 		stdout.write(".")
 		stdout.flush()
 		if i % 100 == 0 and i != 0:
+			# Log
 			print("\nBatch: #", fileCounter, "->", i/baseDictLength,"%")
-			# show
-			print(df)
-		# save 
-			df.to_pickle(join(out_folder,"data%s.pickle" % fileCounter))
+			df.to_pickle(join(temp_folder,"data%s.pickle" % fileCounter))
 			# create new instance
 			df = pd.DataFrame(columns=header)
 			# print(df)
 			rowCounter = 0
 			fileCounter += 1
 
+		# zip files
+		zipf.write(str_files[key][0], arcname="/str/" + str_files[key][1])
+		zipf.write(dis_files[key][0], arcname="/dis/" + dis_files[key][1])
+		zipf.write(pos_files[key][0], arcname="/pos/" + pos_files[key][1])
+		# delete files
+		remove_file(str_files[key][0])
+		remove_file(dis_files[key][0])
+		remove_file(pos_files[key][0])
+	df.to_pickle(join(temp_folder,"data%s.pickle" % fileCounter))
 
-	print(df)
-
-	df.to_pickle(join(out_folder,"data%s.pickle" % fileCounter))
+	# -----------------
+	# creating final pickle
+	print("-- Compiling pickle files")
+	pickle_files = find_files(temp_folder, ("fileFormat","pickle"))
+	df = compile_data(pickle_files)
+	df.to_pickle(join(out_folder, "pickle_data.pickle"))
+	# delete tpm folder
+	remove_file(temp_folder)

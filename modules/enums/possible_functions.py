@@ -11,7 +11,7 @@ from .. functions.run_feb import run_feb
 from .. functions.create_storage_folder import create_storage_folder
 from .. functions.modify_parameter import modify_parameter
 from .. functions.prepare_parameter_study import prepare_parameter_study
-from .. functions.make_ml_dataset import make_ml_dataset
+from .. functions.make_pickle import make_pickle
 
 from .possible_commands import POSSIBLE_COMMANDS
 
@@ -29,5 +29,5 @@ COMMAND_FUNCTION = {
 	POSSIBLE_COMMANDS.CREATE_STORAGE_FOLDER: create_storage_folder,
 	POSSIBLE_COMMANDS.MODIFY_PARAMETER: modify_parameter,
 	POSSIBLE_COMMANDS.PREPARE_PARAMETER_STUDY: prepare_parameter_study,
-	POSSIBLE_COMMANDS.MAKE_ML_DATASET: make_ml_dataset,
+	POSSIBLE_COMMANDS.MAKE_PICKLE: make_pickle,
 }

@@ -17,6 +17,61 @@ from .. classes import FEBio_soup, FEBio_xml_parser
 from .modify_parameter import modify_parameter
 from .run_feb import run_feb
 
+
+def extract_training_data(data, param):
+	p = data["parameters"][param]
+
+	# Validade range and extract values
+	if "range" in p:
+		start_val = p["range"][0]
+		end_val = p["range"][1]
+	else:
+		raise(AssertionError("'range' was not found in param:", param))
+	
+	# Validade interation method and create interarray
+	if "step_size" in p:
+		interarray = np.arange(start_val, end_val, p["step_size"])
+	elif "num_elems" in p:
+		interarray = np.linspace(start_val, end_val, p["num_elems"])
+	else:
+		raise(AssertionError("interation method not found in param:", param, "possible values are: 'step_size', 'num_elems' for training_data"))
+	return start_val, end_val, interarray
+
+def extract_validation_data(data, param):
+	p = data["parameters"][param]
+
+	# Validade range and extract values
+	if "range" in p:
+		start_val = p["range"][0]
+		end_val = p["range"][1]
+	else:
+		raise(AssertionError("'range' was not found in param:", param))
+	
+	# Validade interation method and create interarray
+	if "num_elems" in p:
+		r_arr = np.random.random_sample((p['num_elems'], ))
+		interarray = (end_val - start_val) * r_arr + start_val
+	else:
+		raise(AssertionError("interation method not found in param:", param, "possible values are: 'num_elems' for validadion_data"))
+
+	return start_val, end_val, interarray
+
+def read_param_data(study_type, data, param):
+	if study_type == "training":
+		return extract_training_data(data, param)
+	elif study_type == "validation":
+		return extract_validation_data(data, param)
+	else:
+		raise(ValueError("'study_type' not recognized at param:", param))
+
+def create_mod_p_string(param, val):
+	p_string = "'tag':'{0}','content':{1},'branch':['Material','material','active_contraction']".format(str(param), val)
+	p_string = "{" + p_string + "}"
+	return p_string
+
+def join_p_string(s1, s2):
+	return "[" + s1 +","+s2+"]"
+
 def prepare_parameter_study(inputs):
 	print("=== Preparing parameter study ===")
 
@@ -41,47 +96,43 @@ def prepare_parameter_study(inputs):
 		data = json.load(f)
 
 	params_order = [param for param in data["parameters"]]
+	study_type = data["study_type"]
 
-	print("order:", params_order)
-	print("data:", data)
+	print("study_type:", study_type)
+	print("params:", data["parameters"])
 
-	for (fp, ff, fn) in path_feb_files:
+	total_params = len(params_order)
+	total_feb_files = len(path_feb_files)
+
+	for fi, (fp, ff, _) in enumerate(path_feb_files):
+
 		file_counter = 0
+		# Loop through all parameters
 		for i, parameter in enumerate(params_order):
-			a = data["parameters"][parameter]
-			a_start = a["range"][0]
-			a_end = a["range"][1]
-			a_n = int(np.floor((a_end - a_start) / a["step_size"]))
+			# Get data for 'parent' parameter
+			(_, _, interarray) = read_param_data(study_type, data, parameter)
 
-			for val1 in np.linspace(a_start, a_end, a_n):
+			# Loop trhough all values in range of the 'parent' parameter
+			for val1 in interarray:
 
+				# Loop through all parameters and ignore if 'child' parameter is the same as 'parent'
 				for j, parameter2 in enumerate(params_order):
-
 					if i != j:
-						b = data["parameters"][parameter2]
-						b_start = b["range"][0]
-						b_end = b["range"][1]
-						# b_n = (b_end - b_start) / b["step_size"]
-						b_n = int(np.floor((b_end - b_start) / b["step_size"]))
-						# print("b_n",b_n)
+						# Get data for 'child' parameter
+						(_, _, interarray_2) = read_param_data(study_type, data, parameter)
 
-
-						for val2 in np.linspace(b_start, b_end, b_n):
-							print(parameter, val1, "|", parameter2, val2)
-
+						# Loop trhough all values in range of the 'child' parameter
+						for val2 in interarray_2:
 							
 							# Modify Parameter 
 							# ------------------------------
 
-							param_vals1 = "'tag':'{0}','content':{1},'branch':['Material','material','active_contraction']".format(str(parameter), val1)
-							param_vals1 = "{" + param_vals1 + "}"
+							# Create strings
+							param_vals1 = create_mod_p_string(parameter, val1)
+							param_vals2 = create_mod_p_string(parameter2, val2)
+							param_vals = join_p_string(param_vals1, param_vals2)
 
-							param_vals2 = "'tag':'{0}','content':{1},'branch':['Material','material','active_contraction']".format(str(parameter2), val2)
-							param_vals2 = "{" + param_vals2 + "}"
-							# print("PARAM VALS:", param_vals)
-							param_vals = "[" + param_vals1 +","+param_vals2+"]"
-
-							# print("Setting params of ", parameter, "with respect to", parameter2, "with value of", k)
+							# run modify parameter
 							modify_parameter({
 								POSSIBLE_INPUTS.FEB_FILE: fp,
 								POSSIBLE_INPUTS.OUTPUT_FOLDER: output_folder,
@@ -99,7 +150,7 @@ def prepare_parameter_study(inputs):
 							# Modify Results filenames
 							# ------------------------------
 
-							# check if files exist:
+							# Check if files exist:
 							if exists(position_data_file_path): #pos
 								rename(position_data_file_path,join(output_folder,"position_data_%s.txt" % file_counter))
 							if exists(displacement_data_file_path): #displ
@@ -112,3 +163,10 @@ def prepare_parameter_study(inputs):
 
 							# Increase counter:
 							file_counter += 1
+
+			print("=-"*60)
+			print("Percentage completed: ", (i + 1)/total_params)
+			print("=-"*60)
+		print("=---"*30)
+		print("FEB files read: ", (fi + 1)/total_feb_files)
+		print("=---"*30)
