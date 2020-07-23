@@ -65,7 +65,7 @@ def read_param_data(study_type, data, param):
 		raise(ValueError("'study_type' not recognized at param:", param))
 
 def create_mod_p_string(param, val):
-	p_string = "'tag':'{0}','content':{1},'branch':['Material','material','active_contraction']".format(str(param), val)
+	p_string = "'tag':'{0}','content':{1},'branch':['Material','material','solid']".format(str(param), val)
 	p_string = "{" + p_string + "}"
 	return p_string
 
