@@ -95,11 +95,32 @@ def prepare_parameter_study(inputs):
 	with open(config_file) as f:
 		data = json.load(f)
 
-	params_order = [param for param in data["parameters"]]
+	
 	study_type = data["study_type"]
+	params_order = [param for param in data["parameters"]]
 
+	if "repetition" in data:
+		repRange = range(data['repetition'])
+	else:
+		repRange = [1]
+
+	if "crossIteration" in data:
+		if data["crossIteration"].lower() == "false":
+			crossIteration = False
+		else:
+			crossIteration = True
+	else:
+		crossIteration = True
+
+
+	print("\n")
 	print("study_type:", study_type)
 	print("params:", data["parameters"])
+	# print("repetition", repetition)
+	print("crossIteration", crossIteration)
+
+	print(". " * 50)
+	print("\n")
 
 	total_params = len(params_order)
 	total_feb_files = len(path_feb_files)
@@ -107,66 +128,80 @@ def prepare_parameter_study(inputs):
 	for fi, (fp, ff, _) in enumerate(path_feb_files):
 
 		file_counter = 0
-		# Loop through all parameters
-		for i, parameter in enumerate(params_order):
-			# Get data for 'parent' parameter
-			(_, _, interarray) = read_param_data(study_type, data, parameter)
+		# Loop through repetions
+		for _ in repRange:
 
-			# Loop trhough all values in range of the 'parent' parameter
-			for val1 in interarray:
+			# Loop through all parameters
+			for i, parameter in enumerate(params_order):
+				# Get data for 'parent' parameter
+				(_, _, interarray) = read_param_data(study_type, data, parameter)
 
-				# Loop through all parameters and ignore if 'child' parameter is the same as 'parent'
-				for j, parameter2 in enumerate(params_order):
-					if i != j:
-						# Get data for 'child' parameter
-						(_, _, interarray_2) = read_param_data(study_type, data, parameter)
+				# Loop trhough all values in range of the 'parent' parameter
+				for val1 in interarray:
 
-						# Loop trhough all values in range of the 'child' parameter
-						for val2 in interarray_2:
-							
-							# Modify Parameter 
-							# ------------------------------
+					# Loop through all parameters and ignore if 'child' parameter is the same as 'parent'
+					for j, parameter2 in enumerate(params_order):
+						if i != j and parameter != parameter2:
 
-							# Create strings
-							param_vals1 = create_mod_p_string(parameter, val1)
-							param_vals2 = create_mod_p_string(parameter2, val2)
-							param_vals = join_p_string(param_vals1, param_vals2)
+							if crossIteration == False:
+								# Get data for 'child' parameter
+								(_, _, interarray_2) = read_param_data(study_type, data, parameter)
+							else:
+								(_, _, interarray_2) = read_param_data(study_type, data, parameter2)
 
-							# run modify parameter
-							modify_parameter({
-								POSSIBLE_INPUTS.FEB_FILE: fp,
-								POSSIBLE_INPUTS.OUTPUT_FOLDER: output_folder,
-								POSSIBLE_INPUTS.SAVE_AS_NEW: False,
-								POSSIBLE_INPUTS.PARAM_VALS: param_vals
-							})
+							# Loop trhough all values in range of the 'child' parameter
+							for val2 in interarray_2:
 
-							# Run FEB
-							# ------------------------------
-							path_to_run = join(output_folder, ff)
-							run_feb({
-								POSSIBLE_INPUTS.FEB_FILE: path_to_run
-							})
+								print("Parameter: ", parameter, "| Val: ",  val1)
+								print("Parameter: ", parameter2, "| Val: ",  val2)
 
-							# Modify Results filenames
-							# ------------------------------
 
-							# Check if files exist:
-							if exists(position_data_file_path): #pos
-								rename(position_data_file_path,join(output_folder,"position_data_%s.txt" % file_counter))
-							if exists(displacement_data_file_path): #displ
-								rename(displacement_data_file_path,join(output_folder,"displacement_data_%s.txt" % file_counter))
-							if exists(stress_data_file_path): # stress
-								rename(stress_data_file_path,join(output_folder,"stress_data_%s.txt" % file_counter))
+								
+								# Modify Parameter 
+								# ------------------------------
 
-							# Record info
-							write_csv("modified_param_log.csv",[["index:", file_counter, "param:", "; ".join([parameter, parameter2]), "content:", "; ".join([str(val1), str(val2)])]], path=output_folder, mode="a")
+								# Create strings
+								param_vals1 = create_mod_p_string(parameter, val1)
+								param_vals2 = create_mod_p_string(parameter2, val2)
+								param_vals = join_p_string(param_vals1, param_vals2)
 
-							# Increase counter:
-							file_counter += 1
+								# run modify parameter
+								modify_parameter({
+									POSSIBLE_INPUTS.FEB_FILE: fp,
+									POSSIBLE_INPUTS.OUTPUT_FOLDER: output_folder,
+									POSSIBLE_INPUTS.SAVE_AS_NEW: False,
+									POSSIBLE_INPUTS.PARAM_VALS: param_vals
+								})
 
-			print("=-"*60)
-			print("Percentage completed: ", (i + 1)/total_params)
-			print("=-"*60)
-		print("=---"*30)
-		print("FEB files read: ", (fi + 1)/total_feb_files)
-		print("=---"*30)
+								# Run FEB
+								# ------------------------------
+								path_to_run = join(output_folder, ff)
+								run_feb({
+									POSSIBLE_INPUTS.FEB_FILE: path_to_run
+								})
+
+								# Modify Results filenames
+								# ------------------------------
+
+								# Check if files exist:
+								if exists(position_data_file_path): #pos
+									rename(position_data_file_path,join(output_folder,"position_data_%s.txt" % file_counter))
+								if exists(displacement_data_file_path): #displ
+									rename(displacement_data_file_path,join(output_folder,"displacement_data_%s.txt" % file_counter))
+								if exists(stress_data_file_path): # stress
+									rename(stress_data_file_path,join(output_folder,"stress_data_%s.txt" % file_counter))
+
+								# Record info
+								write_csv("modified_param_log.csv",[["index:", file_counter, "param:", "; ".join([parameter, parameter2]), "content:", "; ".join([str(val1), str(val2)])]], path=output_folder, mode="a")
+
+								# Increase counter:
+								file_counter += 1
+
+				
+				print("=-"*60)
+				print("Percentage completed: ", (i + 1)/total_params)
+				print("=-"*60)
+
+			print("=---"*30)
+			print("FEB files read: ", (fi + 1)/total_feb_files)
+			print("=---"*30)
