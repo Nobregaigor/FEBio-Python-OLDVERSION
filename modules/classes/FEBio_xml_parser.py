@@ -194,12 +194,12 @@ class FEBio_xml_parser():
 		first_ids = []
 		elems_ref = []
 		for _, var in enumerate(self.Geometry.findall("Elements")):
-			if var.get("type").find("hex") != -1:
-				element_set_name = var.get("name")
-				first_ids.append(int(var.find("elem").get("id")))
-				a = ET.SubElement(mesh_data,"ElementData")
-				a.set("elem_set", element_set_name)
-				a.set("var", "mat_axis")
+			# if var.get("type").find("hex") != -1:
+			element_set_name = var.get("name")
+			first_ids.append(int(var.find("elem").get("id")))
+			a = ET.SubElement(mesh_data,"ElementData")
+			a.set("elem_set", element_set_name)
+			a.set("var", "mat_axis")
 
 		# Create node sub_elements
 		l_first_ids = len(first_ids)

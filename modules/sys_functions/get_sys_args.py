@@ -74,7 +74,7 @@ def get_input_arguments():
 		elif _name.find("FOLDER") != -1:
 			if not check_if_is_folder(_user_input):
 				print("folder:",_user_input)
-				raise(AssertionError("Input folder: ", _name, "is not a valid folder. Please check arguments and try again."))
+				print("***** Input folder: ", _name, "is not a valid folder. Please check arguments and try again. *****")
 
 		inputs[POSSIBLE_INPUTS[_name]] = _user_input
 	# check if balance is zero

@@ -6,7 +6,7 @@ from os.path import join
 from .. enums import POSSIBLE_INPUTS
 from .. sys_functions.find_files_in_folder import find_files
 from .. sys_functions.read_files import read_xml
-from .. classes import FEBio_soup, FEBio_xml_parser
+from .. classes import FEBio_xml_parser
 
 
 def format_data_to_write(data):

@@ -96,7 +96,7 @@ def make_pickle(inputs):
 		mkdir(temp_folder)
 
 	# zipfile handler
-	zipf = zipfile.ZipFile(join(out_folder,'zipped_data.zip'), 'w', zipfile.ZIP_DEFLATED)
+	zipf = zipfile.ZipFile(join(inp_folder,'zipped_data.zip'), 'w', zipfile.ZIP_DEFLATED)
 
 	files = find_files(inp_folder, ("fileFormat","txt"))
 	csv_files = find_files(inp_folder, ("fileFormat","csv"))
@@ -159,13 +159,14 @@ def make_pickle(inputs):
 			pos_data = decode_data(pos_files[key][0])
 
 			org_keys = sorted(str_data.keys())
+			if len(org_keys) > 0:
 
-			last_timestamp = org_keys[-1]
-			failed = 1 if float(last_timestamp) != LAST_TIMESTAMP else 0
+				last_timestamp = org_keys[-1]
+				failed = 1 if float(last_timestamp) != LAST_TIMESTAMP else 0
 
-			for time in org_keys:
-				df.loc[rowCounter] = params[key] + [time] + [failed] + pos_data[time] + dis_data[time] + str_data[time]
-				rowCounter += 1
+				for time in org_keys:
+					df.loc[rowCounter] = params[key] + [time] + [failed] + pos_data[time] + dis_data[time] + str_data[time]
+					rowCounter += 1
 
 		stdout.write(".")
 		stdout.flush()
