@@ -4,9 +4,11 @@ import re
 import pandas as pd
 from os.path import join, exists
 from os import mkdir
+from shutil import rmtree
 from os import remove as remove_file
 from sys import stdout 
 import zipfile
+import ntpath
 
 from .. enums import POSSIBLE_INPUTS, POSSIBLE_COMMANDS, INPUT_DEFAULTS, PATH_TO_STORAGE
 from .. sys_functions.find_files_in_folder import find_files
@@ -90,6 +92,8 @@ def make_pickle(inputs):
 	print("-- Getting input files")
 	inp_folder = inputs[POSSIBLE_INPUTS.INPUT_FOLDER]
 	out_folder = inputs[POSSIBLE_INPUTS.OUTPUT_FOLDER]
+
+	inpf_name = ntpath.basename(inp_folder)
 
 	temp_folder = join(inp_folder,"tmp")
 	if not exists(temp_folder):
@@ -195,6 +199,6 @@ def make_pickle(inputs):
 	print("-- Compiling pickle files")
 	pickle_files = find_files(temp_folder, ("fileFormat","pickle"))
 	df = compile_data(pickle_files)
-	df.to_pickle(join(out_folder, "pickle_data.pickle"))
+	df.to_pickle(join(out_folder, inpf_name + ".pickle"))
 	# delete tpm folder
-	remove_file(temp_folder)
+	rmtree(temp_folder)

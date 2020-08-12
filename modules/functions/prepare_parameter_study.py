@@ -5,6 +5,7 @@ from pathlib import Path
 from os.path import join, exists
 from os import rename
 import numpy as np
+import time
 
 from ast import literal_eval
 
@@ -35,6 +36,8 @@ def extract_training_data(data, param):
 		interarray = np.linspace(start_val, end_val, p["num_elems"])
 	else:
 		raise(AssertionError("interation method not found in param:", param, "possible values are: 'step_size', 'num_elems' for training_data"))
+	
+	interarray = interarray.round(decimals=4)
 	return start_val, end_val, interarray
 
 def extract_validation_data(data, param):
@@ -51,6 +54,7 @@ def extract_validation_data(data, param):
 	if "num_elems" in p:
 		r_arr = np.random.random_sample((p['num_elems'], ))
 		interarray = (end_val - start_val) * r_arr + start_val
+		interarray = interarray.round(decimals=4)
 	else:
 		raise(AssertionError("interation method not found in param:", param, "possible values are: 'num_elems' for validadion_data"))
 
@@ -112,6 +116,7 @@ def prepare_parameter_study(inputs):
 	else:
 		crossIteration = True
 
+	used_combinations = set()
 
 	print("\n")
 	print("study_type:", study_type)
@@ -155,47 +160,53 @@ def prepare_parameter_study(inputs):
 								print("Parameter: ", parameter, "| Val: ",  val1)
 								print("Parameter: ", parameter2, "| Val: ",  val2)
 
+								if (val1, val2) not in used_combinations:
+									used_combinations.add((val1,val2))
 
-								
-								# Modify Parameter 
-								# ------------------------------
+									# Modify Parameter 
+									# ------------------------------
 
-								# Create strings
-								param_vals1 = create_mod_p_string(parameter, val1)
-								param_vals2 = create_mod_p_string(parameter2, val2)
-								param_vals = join_p_string(param_vals1, param_vals2)
+									# Create strings
+									param_vals1 = create_mod_p_string(parameter, val1)
+									param_vals2 = create_mod_p_string(parameter2, val2)
+									param_vals = join_p_string(param_vals1, param_vals2)
 
-								# run modify parameter
-								modify_parameter({
-									POSSIBLE_INPUTS.FEB_FILE: fp,
-									POSSIBLE_INPUTS.OUTPUT_FOLDER: output_folder,
-									POSSIBLE_INPUTS.SAVE_AS_NEW: False,
-									POSSIBLE_INPUTS.PARAM_VALS: param_vals
-								})
+									# run modify parameter
+									modify_parameter({
+										POSSIBLE_INPUTS.FEB_FILE: fp,
+										POSSIBLE_INPUTS.OUTPUT_FOLDER: output_folder,
+										POSSIBLE_INPUTS.SAVE_AS_NEW: False,
+										POSSIBLE_INPUTS.PARAM_VALS: param_vals
+									})
 
-								# Run FEB
-								# ------------------------------
-								path_to_run = join(output_folder, ff)
-								run_feb({
-									POSSIBLE_INPUTS.FEB_FILE: path_to_run
-								})
+									time.sleep(0.1)
 
-								# Modify Results filenames
-								# ------------------------------
+									# Run FEB
+									# ------------------------------
+									path_to_run = join(output_folder, ff)
 
-								# Check if files exist:
-								if exists(position_data_file_path): #pos
-									rename(position_data_file_path,join(output_folder,"position_data_%s.txt" % file_counter))
-								if exists(displacement_data_file_path): #displ
-									rename(displacement_data_file_path,join(output_folder,"displacement_data_%s.txt" % file_counter))
-								if exists(stress_data_file_path): # stress
-									rename(stress_data_file_path,join(output_folder,"stress_data_%s.txt" % file_counter))
+									run_feb({
+										POSSIBLE_INPUTS.FEB_FILE: path_to_run
+									})
 
-								# Record info
-								write_csv("modified_param_log.csv",[["index:", file_counter, "param:", "; ".join([parameter, parameter2]), "content:", "; ".join([str(val1), str(val2)])]], path=output_folder, mode="a")
+									time.sleep(0.1)
 
-								# Increase counter:
-								file_counter += 1
+									# Modify Results filenames
+									# ------------------------------
+
+									# Check if files exist:
+									if exists(position_data_file_path): #pos
+										rename(position_data_file_path,join(output_folder,"position_data_%s.txt" % file_counter))
+									if exists(displacement_data_file_path): #displ
+										rename(displacement_data_file_path,join(output_folder,"displacement_data_%s.txt" % file_counter))
+									if exists(stress_data_file_path): # stress
+										rename(stress_data_file_path,join(output_folder,"stress_data_%s.txt" % file_counter))
+
+									# Record info
+									write_csv("modified_param_log.csv",[["index:", file_counter, "param:", "; ".join([parameter, parameter2]), "content:", "; ".join([str(val1), str(val2)])]], path=output_folder, mode="a")
+
+									# Increase counter:
+									file_counter += 1
 
 				
 				print("=-"*60)

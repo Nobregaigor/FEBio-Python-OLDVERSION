@@ -89,6 +89,7 @@ class FEBio_xml_parser():
 		print("Adding tag...")
 		# Parse content
 		tree, root = self.parse(content)
+
 		# If no branch was given, content is global
 		if branch == None:
 			tag_name = root.tag
@@ -100,15 +101,23 @@ class FEBio_xml_parser():
 					elif props_idx == len(self.props_order) -1:
 						insert_pos = -1
 					else:
-						for tag_to_find in reversed(self.props_order[:props_idx]):
-							if tag_to_find in self.existing_tags:
-								insert_pos = self.existing_tags.index(tag_to_find) + 1 
-								break
+						insert_pos = props_idx
+						# for tag_to_find in reversed(self.props_order[:props_idx]):
+						# 	print("tag_to_find: ", tag_to_find)
+						# 	if tag_to_find in self.existing_tags:
+						# 		print("tag_to_find index: ", self.existing_tags.index(tag_to_find))
+						# 		curr_loc = self.existing_tags.index(tag_to_find)
+						# 		insert_pos = curr_loc + 1 if curr_loc > 1 else 0
+						# 		break
+					print("Adding: ", tag_name, "props_idx: ", props_idx, "| must add at pos: ", insert_pos)
 			else:
 				insert_pos = -1
 
 			self.set_tag_obj_ref(root)
-			self.root.insert(insert_pos, root)
+			if insert_pos == -1:
+				self.root.append(root)
+			else:
+				self.root.insert(insert_pos, root)
 
 		else:
 			if type(branch) == list or type(branch) == tuple:
@@ -116,15 +125,19 @@ class FEBio_xml_parser():
 				b = a.find(branch[1])
 				if b != None:
 					a = b
-
 			else:
 				a = getattr(self,branch)
 
-			exists = a.find(root.tag)
-			if exists != None:
-				exists.text = root.text
+			# exists = a.find(root.tag)
+			# print("exists: ", exists)
+			# if exists != None:
+			# 	exists.text = root.text
+			# else:
+			
+			if insert_pos == -1:
+				a.append(root) # inserts as the last element
 			else:
-				a.insert(insert_pos,root)
+				a.insert(insert_pos, root)
 
 		print("-Added:", root.tag + ".")
 
@@ -193,36 +206,60 @@ class FEBio_xml_parser():
 		# Create sub-elements for each element set and list first id of each sub-element
 		first_ids = []
 		elems_ref = []
+		max_penta_elem = -1
 		for _, var in enumerate(self.Geometry.findall("Elements")):
 			# if var.get("type").find("hex") != -1:
 			element_set_name = var.get("name")
+			element_set_type = var.get("type")
+			elems_ref.append(element_set_name)
 			first_ids.append(int(var.find("elem").get("id")))
 			a = ET.SubElement(mesh_data,"ElementData")
 			a.set("elem_set", element_set_name)
 			a.set("var", "mat_axis")
+			# sum number of penta elements (FEBio cannot have two fiber axis for a hex element connected to a penta element)
+			if element_set_type.find("penta") != -1:
+				number_of_penta_children = len(var.getchildren())
+				max_penta_elem = number_of_penta_children if max_penta_elem == -1 else max_penta_elem + number_of_penta_children
 
+		# get last element with fiber based on number of 
+		last_elem_with_fiber = len(df_fibers) - max_penta_elem if max_penta_elem != -1 else len(df_fibers) + 1
 		# Create node sub_elements
 		l_first_ids = len(first_ids)
-		r_first_ids = range(l_first_ids -1)
-		for row in df_fibers.itertuples():
+		belongs = 0
+		# print("i", 0, "belongs", belongs, "elems_ref", elems_ref[belongs])
+		local_id = 0
+		for i, row in enumerate(df_fibers.itertuples()):
+			# if i + 1 > last_elem_with_fiber:
+			# 	break
+			if l_first_ids > 1 and belongs + 1 < l_first_ids:
+				if i + 2 > first_ids[belongs + 1]:
+					belongs += 1
+					local_id = 0
+
+			local_id += 1
+					# print("i", i, "belongs", belongs, "elems_ref", elems_ref[belongs])
+					
 			# Set fiber info
-			fid = row[0] + int(first_ids[0])
+			# fid = row[0] + int(first_ids[0])
+			fid = local_id
 			f0 = ','.join(str(val) for val in row[3:6])
 			s0 = ','.join(str(val) for val in row[6:9])
 
-			# Specify which element set the fiber belongs
-			if l_first_ids > 2:
-				for i in r_first_ids:
-					if first_ids[i] <= fid <= first_ids[i+1]:
-						belongs = i
-						break
-			elif l_first_ids == 2:
-				if first_ids[0] <= fid <= first_ids[1]:
-					belongs = 0
-				else:
-					belongs = 1
-			else:
-				belongs = 0
+			
+
+			# # Specify which element set the fiber belongs
+			# if l_first_ids > 2:
+			# 	for i in r_first_ids:
+			# 		if first_ids[i] <= fid <= first_ids[i+1]:
+			# 			belongs = i
+			# 			break
+			# elif l_first_ids == 2:
+			# 	if first_ids[0] <= fid <= first_ids[1]:
+			# 		belongs = 0
+			# 	else:
+			# 		belongs = 1
+			# else:
+			# 	belongs = 0
 
 			# Create sub-elements
 			elem = ET.SubElement(mesh_data[belongs], "elem")

@@ -26,25 +26,46 @@ def calculate_fibers(inputs):
 	if file_to_calculate != "all":
 		files = [f for f in files if f[1].find(file_to_calculate) != -1]
 
-	nodes_files = [f for f in files if f[1].find("_nodes") != -1 and f[1].find("hex") == -1]
-	elems_files = [f for f in files if f[1].find("_elems") != -1 and f[1].find("hex") == -1]
-	nodes_files_hex = [f for f in files if f[1].find("_nodes") != -1 and f[1].find("hex") != -1]
-	elems_files_hex = [f for f in files if f[1].find("_elems") != -1 and f[1].find("hex") != -1]
+	nodes_files = [f for f in files if f[1].find("_nodes") != -1 and f[1].find("hexbase") == -1]  #and f[1].find("hex") == -1]
+	elems_files = [f for f in files if f[1].find("_elems") != -1 and f[1].find("hexbase") == -1]  #and f[1].find("hex") == -1]
+
+	# nodes_files_hex = [f for f in files if f[1].find("_nodes") != -1 and f[1].find("hex") != -1]
+	# elems_files_hex = [f for f in files if f[1].find("_elems") != -1 and f[1].find("hex") != -1]
+	nodes_files_hexbase = [f for f in files if f[1].find("_nodes") != -1 and f[1].find("hexbase") != -1]
+	elems_files_hexbase = [f for f in files if f[1].find("_elems") != -1 and f[1].find("hexbase") != -1]
 
 	for node_file in nodes_files:
 		fname = node_file[2].split("_nodes")[0]
 		print("\n--> Calculating fibers for:", fname)
 
-		elem_file = [f for f in elems_files if f[2].split("_elems")[0] == fname][0]
+		mesh_type = "tet" if fname.find("tet") != -1 else "hex" # determine sif file is hex or tet
 
-		if len(nodes_files_hex) > 0:
-			node_file_hex = [f for f in nodes_files_hex if len(close_matches(fname, [f[2].split("_nodes")[0]])) > 0][0]
-			elem_file_hex = [f for f in elems_files_hex if len(close_matches(fname, [f[2].split("_elems")[0]])) > 0][0]
-			print("-Using node hex file:", node_file_hex[2])
-			print("-Using elem hex file:", elem_file_hex[2])
+		if mesh_type == "hex":
+			print("-matching hex")
+			if len(nodes_files_hexbase) > 1:
+				tet_nodes = [f for f in nodes_files_hexbase if len(close_matches(fname, [f[2].split("_nodes")[0].replace("hexbase","")])) > 0][0]
+				tet_elems = [f for f in elems_files_hexbase if len(close_matches(fname, [f[2].split("_elems")[0].replace("hexbase","")])) > 0][0]
+			else:
+				tet_nodes = nodes_files_hexbase[0]
+				tet_elems = elems_files_hexbase[0]
+			hex_nodes = node_file
+			hex_elems = [f for f in elems_files if f[2].split("_elems")[0] == fname][0]
 		else:
-			node_file_hex = node_file
-			elem_file_hex = elem_file
+			print("-matching tet")
+			tet_nodes = node_file
+			tet_elems = [f for f in elems_files if f[2].split("_elems")[0] == fname][0]
+			hex_nodes = tet_nodes
+			hex_elems = tet_elems
+
+		# elem_file = [f for f in elems_files if f[2].split("_elems")[0] == fname][0]
+		# if len(nodes_files_hex) > 0:
+		# 	node_file_hex = [f for f in nodes_files_hex if len(close_matches(fname, [f[2].split("_nodes")[0]])) > 0][0]
+		# 	elem_file_hex = [f for f in elems_files_hex if len(close_matches(fname, [f[2].split("_elems")[0]])) > 0][0]
+		# 	print("-Using node hex file:", node_file_hex[2])
+		# 	print("-Using elem hex file:", elem_file_hex[2])
+		# else:
+		# 	node_file_hex = node_file
+		# 	elem_file_hex = elem_file
 
 		theta_endo = matlab_params['endo']
 		theta_epi = matlab_params['epi']
@@ -59,8 +80,8 @@ def calculate_fibers(inputs):
 		# print(elem_file_hex[0])
 
 
-		params = "'"+ node_file[0] + "'" + ',' + "'"+ elem_file[0] + "'" + ',' + \
-			"'" + node_file_hex[0] + "'" + ',' + "'" + elem_file_hex[0] + "'" + ',' + \
+		params = "'"+ tet_nodes[0] + "'" + ',' + "'"+ tet_elems[0] + "'" + ',' + \
+			"'" + hex_nodes[0] + "'" + ',' + "'" + hex_elems[0] + "'" + ',' + \
 			str(theta_endo) + ',' + str(theta_epi) + ',' + \
 			"'" + path_o_folder + "\\" + fname + "'"
 

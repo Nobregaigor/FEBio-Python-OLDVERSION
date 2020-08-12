@@ -60,9 +60,9 @@ def add_fibers_to_feb(inputs):
 		global_output_filename = fname if "load" not in p[0] else "with_load_" + fname 
 		
 		# Match all existing files:
-		match_fname = fname.replace("hex","tet_4") if fname.find("hex") != -1 else fname
-		print("matched name:", match_fname)
-		matched_fibers = [f for f in fibers_files if match_fname in f[2]]
+		# match_fname = fname.replace("hex","tet_4") if fname.find("hex") != -1 else fname
+		# print("matched name:", match_fname)
+		matched_fibers = [f for f in fibers_files if fname in f[2]]
 
 			# for f in fibers_files:
 			# 	if fname in f[2]:
