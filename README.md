@@ -1,31 +1,63 @@
-## !! work in Progress !!
+# FEBIO-Python
+
+#### Welcome!
+
+FEBio-Python is an open source repo for optmizing FEA studies using FEBio solver. The library makes it possible to easily set up parametric studies, modify .feb files using command line. One can also use it to run several feb files and extract geometric and result files from each simulation.
+
+### Contribute!
+
+All ideas are welcome. Open/close issues, fork the repo, implement your own functions and share your code with a Pull Request. You can clone this project to your machine with:
+
+```bash
+git clone https://github.com/Nobregaigor/FEBio-Python.git
+```
 
 ### Guidelines
 
 ---
 
 ##### Reference list
-Commands|Description|Inputs
--------|----------|-----
-ADD_PROPERTIES|Adds selected properties to a given FEB.|<ul><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>PROPERTIES_FOLDER (O).</li><li>OUTPUT_FOLDER (O).</li><li>SELECTED_PROPERTIES (O).</li></ul>
-ADD_FIBERS|Adds fibers data to a feb file.|<ul><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>FIBERS_DATA_FOLDER (O).</li><li>OUTPUT_FOLDER (O).</li></ul>
-CREATE_LOADCURVE|Creates a load curve using FEB format (written in a xml file).|<ul><li>CURVE_NAME (R).</li><li>CURVE_MODEL (R).</li><li>CURVE_PARAMS (R).</li><li>CURVE_FOLDER (O).</li><li>CURVE_TYPE (O).</li></ul>
-ADD_LOAD|Add Loads and LoadData to a given feb file.|<ul><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>OUTPUT_FOLDER (O).</li><li>LOAD_NAME (O).</li><li>LOAD_FOLDER (O).</li><li>LOAD_ATTRS (O).</li></ul>
-EXTRACT_GEOMETRY_DATA|Extract the geometry data (nodes and elements) from a given feb file.|<ul><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>OUTPUT_FOLDER (O).</li></ul>
-CALCULATE_FIBERS|Calculates fiber orientation of a myocardium geometry.|<ul><li>FEB_NAME (O).</li><li>GEOMETRY_DATA_FOLDER (O).</li><li>OUTPUT_FOLDER (O).</li><li>PATH_TO_MATLAB_FOLDER (O).</li><li>MATLAB_PARAMS (O).</li></ul>
-PREPARE|Prepares and executes a mesh study. Can also be used to do a parametric study with fiber orientation.|<ul><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>OUTPUT_FOLDER (O).</li></ul>
-RUN_FEB|Runs an feb file or all files in sub-folder of an input folder.|<ul><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li></ul>
-CREATE_STORAGE_FOLDER|Creates the main folders of a study storage.|<ul><li>STORAGE_NAME (R).</li><li>PATH_TO_STORAGE (O).</li></ul>
-CALCULATE_RESULTS|ndy|<ul><li>INPUT_FOLDER (O).</li></ul>
-MODIFY_PARAMETER|Modifies given parameters of a feb file.|<ul><li>PARAM_VALS (R).</li><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>SAVE_AS_NEW (O).</li></ul>
-PREPARE_PARAMETER_STUDY|Prepares a parametric study.|<ul><li>CONFIG_FILE (R).</li><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>OUTPUT_FOLDER (O).</li></ul>
-MAKE_PICKLE|Makes a pickle from a colection of result files.|<ul><li>INPUT_FOLDER (O).</li><li>OUTPUT_FOLDER (O).</li></ul>
+
+
+| Commands | Description | Inputs |
+| - | - | - |
+| ADD_PROPERTIES | Adds selected properties to a given FEB. | <ul><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>PROPERTIES_FOLDER (O).</li><li>OUTPUT_FOLDER (O).</li><li>SELECTED_PROPERTIES (O).</li></ul> |
+| ADD_FIBERS | Adds fibers data to a feb file. | <ul><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>FIBERS_DATA_FOLDER (O).</li><li>OUTPUT_FOLDER (O).</li></ul> |
+| CREATE_LOADCURVE | Creates a load curve using FEB format (written in a xml file). | <ul><li>CURVE_NAME (R).</li><li>CURVE_MODEL (R).</li><li>CURVE_PARAMS (R).</li><li>CURVE_FOLDER (O).</li><li>CURVE_TYPE (O).</li></ul> |
+| ADD_LOAD | Add Loads and LoadData to a given feb file. | <ul><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>OUTPUT_FOLDER (O).</li><li>LOAD_NAME (O).</li><li>LOAD_FOLDER (O).</li><li>LOAD_ATTRS (O).</li></ul> |
+| EXTRACT_GEOMETRY_DATA | Extract the geometry data (nodes and elements) from a given feb file. | <ul><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>OUTPUT_FOLDER (O).</li></ul> |
+| CALCULATE_FIBERS | Calculates fiber orientation of a myocardium geometry. | <ul><li>FEB_NAME (O).</li><li>GEOMETRY_DATA_FOLDER (O).</li><li>OUTPUT_FOLDER (O).</li><li>PATH_TO_MATLAB_FOLDER (O).</li><li>MATLAB_PARAMS (O).</li></ul> |
+| PREPARE | Prepares and executes a mesh study. Can also be used to do a parametric study with fiber orientation. | <ul><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>OUTPUT_FOLDER (O).</li></ul> |
+| RUN_FEB | Runs an feb file or all files in sub-folder of an input folder. | <ul><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li></ul> |
+| CREATE_STORAGE_FOLDER | Creates the main folders of a study storage. | <ul><li>STORAGE_NAME (R).</li><li>PATH_TO_STORAGE (O).</li></ul> |
+| CALCULATE_RESULTS | ndy | <ul><li>INPUT_FOLDER (O).</li></ul> |
+| MODIFY_PARAMETER | Modifies given parameters of a feb file. | <ul><li>PARAM_VALS (R).</li><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>SAVE_AS_NEW (O).</li></ul> |
+| PREPARE_PARAMETER_STUDY | Prepares a parametric study. | <ul><li>CONFIG_FILE (R).</li><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>OUTPUT_FOLDER (O).</li></ul> |
+| MAKE_PICKLE | Makes a pickle from a colection of result files. | <ul><li>INPUT_FOLDER (O).</li><li>OUTPUT_FOLDER (O).</li></ul> |
+
 ### Descriptions of Commands and Inputs
 
 ---
 
 ##### List of Commands
 
+
+| Commands | Description |
+| - | - |
+| ADD_PROPERTIES | This command can be used to add selected properties to one or more feb files. Properties must be a valid direct child of the febio_spec root and be named with its outermost element. Properties must be written in xml format. |
+| ADD_FIBERS | This command can be used to add MeshData element to a feb file containing fibers data. Fibers are organized by element type and can be computed using CALCULATE_FIBERS command. Fibers data .csv file must contain the name of the FEB file which it refers to and first row must have node number information. |
+| CREATE_LOADCURVE | This command can be used to create a loadcurve with specified parameters. |
+| ADD_LOAD | This command can be used to add one or more<loadcurve> to a <LoadData> or one or more <load> to a <Loads> in a FEB file. Moreover, loadfiles must contain the name of the load or loadcurve to be included. Loadcurves must also contain <loadcurve> in its name. |
+| EXTRACT_GEOMETRY_DATA | This command is used to extract the geometry data (nodes and elements) from a given feb file. It saves nodes and elements in seperate files in a .csv format where the first colum is the node or element id and the following columns are the geometry data. |
+|   |   |
+| CALCULATE_FIBERS | This command is used to calculate the fibers of a generic myocardium geometry. It uses MATLAB to compute the fiber orientation and saves the output on a fibers data file. |
+| PREPARE | This command can be used to prepare and execute a mesh or parametric study. It will use one or more raw FEB files, include all properties in a given<property> folder, inlude all loads in a <load> property, extract geometry data, compute fibers data and add them to the given feb files. Next, it will run all feb files in the saved directory. For now, it does not allow for skipping steps, but will add such functionality in the future. |
+| RUN_FEB | This command is used to run all FEB files in sub-folders of a given directory. Will add functionality to run all feb files in a single directory. |
+| CREATE_STORAGE_FOLDER | This command can be used to set up a storage folder with the main folders of a study storage. |
+| CALCULATE_RESULTS | ndy |
+| MODIFY_PARAMETER | This command can be used to modify parameters of one or more feb file. |
+| PREPARE_PARAMETER_STUDY | Prepares a parametric study. |
+| MAKE_PICKLE | Makes a pickle from a colection of result files. |
 
 ##### List of Inputs
 
