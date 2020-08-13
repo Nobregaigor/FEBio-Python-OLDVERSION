@@ -12,7 +12,11 @@ def run_feb(inputs):
 	log.log_step("\n== {} ==\n".format(function_name))
 	
 	# GET RA Inputs
-	path_feb_files = get_path_to_FEB_files(inputs)
+	path_to_folders = find_folders(inputs[POSSIBLE_INPUTS.INPUT_FOLDER])
+	path_feb_files = []
+	for folder in path_to_folders:
+		path_feb_files.extend(find_files(folder[0],("fileFormat","feb")))
+
 
 	for feb_file in path_feb_files:
 		print("\n--> Running: ", feb_file[2])

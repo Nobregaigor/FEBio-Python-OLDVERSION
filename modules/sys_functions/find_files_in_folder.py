@@ -3,8 +3,6 @@ from os.path import isfile, join, isdir
 import sys, getopt
 import subprocess
 
-
-
 def find_files(path_to_folder, condition=None):
 	if (condition):
 		if (condition[0] == "fileFormat"):

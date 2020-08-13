@@ -17,10 +17,9 @@ def add_properties_to_feb(inputs):
     function_name = 'ADD_PROPERTIES'
     log.log_step("\n== {} ==\n".format(function_name))
     
-
     # GET RA Inputs
     path_feb_files = get_path_to_FEB_files(inputs)
-    
+        
     # Get optional Inputs
     path_p_folder = get_optional_input(inputs, 'PROPERTIES_FOLDER', function_name)
     selected_prop = get_optional_input(inputs, 'SELECTED_PROPERTIES', function_name)
