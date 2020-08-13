@@ -72,9 +72,9 @@ Or, to show a list of inputs accepted by the command:
 ```
 ### Command input requirement types:
 Each command requires a certain list of inputs, however, if you are using a config file, you do not need to keep providing all the inputs at all times. Each input is categorized into one of the following type:
-* Required **(R)**: Must be included in the command line every time the command is executed. There is no reference to it in the config file.
-* Required, but has alternative options **(RA)**: The input is require, but there are different choices that satisfy its category. For instance, in some functions you can use FEB_FILE or INPUT_FILE with the same meaning. 
-* Optional **(O)**: Inputs categorized as optional can have a reference to it in the config file. When the function is executed, if the given input is not listed withn its command, the program will look for it in the config file. If the program does not find its reference, it might cause issues at run time.
+* **Required (R)**: Must be included in the command line every time the command is executed. There is no reference to it in the config file.
+* **Required, but has alternative options (RA)**: The input is require, but there are different choices that satisfy its category. For instance, in some functions you can use FEB_FILE or INPUT_FILE with the same meaning. 
+* **Optional (O)**: Inputs categorized as optional can have a reference to it in the config file. When the function is executed, if the given input is not listed withn its command, the program will look for it in the config file. If the program does not find its reference, it might cause issues at run time.
 To check which input and what type of input the command requires, check the Reference list.
 
 ### The config file:
@@ -124,7 +124,6 @@ Check the project's guidelines for a list of commands and their possible inputs.
 | CREATE_LOADCURVE | This command can be used to create a loadcurve with specified parameters. |
 | ADD_LOAD | This command can be used to add one or more<loadcurve> to a <LoadData> or one or more <load> to a <Loads> in a FEB file. Moreover, loadfiles must contain the name of the load or loadcurve to be included. Loadcurves must also contain <loadcurve> in its name. |
 | EXTRACT_GEOMETRY_DATA | This command is used to extract the geometry data (nodes and elements) from a given feb file. It saves nodes and elements in seperate files in a .csv format where the first colum is the node or element id and the following columns are the geometry data. |
-|   |   |
 | CALCULATE_FIBERS | This command is used to calculate the fibers of a generic myocardium geometry. It uses MATLAB to compute the fiber orientation and saves the output on a fibers data file. |
 | PREPARE | This command can be used to prepare and execute a mesh or parametric study. It will use one or more raw FEB files, include all properties in a given<property> folder, inlude all loads in a <load> property, extract geometry data, compute fibers data and add them to the given feb files. Next, it will run all feb files in the saved directory. For now, it does not allow for skipping steps, but will add such functionality in the future. |
 | RUN_FEB | This command is used to run all FEB files in sub-folders of a given directory. Will add functionality to run all feb files in a single directory. |
