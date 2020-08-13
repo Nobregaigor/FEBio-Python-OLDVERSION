@@ -1,0 +1,92 @@
+{
+  "INPUT-OPTIONS": {
+    "INPUT_FILE": "Input file (R): Uses this file as the main FEB file.",
+    "FEB_FILE": "Feb file (OR): Same as input file, but will replace it if both are given.",
+    "INPUT_FOLDER": "Input folder (OR): Finds all feb inside the given directory. Will overwrite input file or feb file if given.",
+    "OUTPUT_FOLDER": "Output folder (O): Where the output file should be written. Default uses same directory as input folder.",
+  
+    "PROPERTIES_FOLDER": "Properties folder (O): Folder containg properties to add to feb. Properties must be xml files.",
+    "SELECTED_PROPERTIES": "Selected properties (O): A string containg selected properties to include. To select all use -all-.",
+    "EXCLUDE_PROPERTIES": "Exclude properties (O): A string containg selected properties to exclude.",
+
+    "FIBERS_DATA_FOLDER": "Fibers data folder (O): Folder containg the fibers csv data files.",
+
+    "CURVE_NAME": "ndy",
+    "CURVE_MODEL": "ndy",
+    "CURVE_PARAMS": "ndy",
+    "CURVE_TYPE": "ndy",
+    "CURVE_FOLDER": "ndy",
+
+    "LOAD_NAME": "ndy",
+    "LOAD_FOLDER": "ndy",
+    "LOAD_ATTRS": "ndy",
+
+    "FEB_NAME": "ndy",
+    "GEOMETRY_DATA_FOLDER": "ndy",
+    "PATH_TO_MATLAB_FOLDER": "ndy",
+    "MATLAB_PARAMS": "ndy",
+
+    "STORAGE_NAME": "ndy",
+    "PATH_TO_STORAGE": "ndy",
+
+    "PARAM_VALS": "ndy",
+    "SAVE_AS_NEW": "ndy",
+
+    "CONFIG_FILE": "ndy"
+  },
+
+  "COMMANDS": {
+    "ADD_PROPERTIES": {
+      "short": "Adds selected properties to a given FEB.",
+      "long": "ndy"
+    },
+    "ADD_FIBERS": {
+      "short": "Adds fibers data to a feb file.",
+      "long": "ndy"
+    },
+    "CREATE_LOADCURVE": {
+      "short": "Creates a load curve using FEB format (written in a xml file).",
+      "long": "ndy"
+    },
+    "ADD_LOAD": {
+      "short": "Add Loads and LoadData to a given feb file.",
+      "long": "ndy"
+    },
+    "EXTRACT_GEOMETRY_DATA": {
+      "short": "Extract the geometry data (nodes and elements) from a given feb file.",
+      "long": "This command is used to extract the geometry data (nodes and elements) from a given feb file. \nIt saves nodes and elements in seperate files in a .csv format where the first colum is the node or element id and the following columns are the geometry data."
+    },
+    "CALCULATE_FIBERS": {
+      "short": "Calculates fiber orientation of a myocardium geometry.",
+      "long": "This command is used to calculate the fibers of a generic myocardium geometry. It uses MATLAB to compute the fiber orientation and saves the output on a fibers data file."
+    },
+    "PREPARE": {
+      "short": "Prepares and executes a mesh study. Can also be used to do a parametric study with fiber orientation.",
+      "long": "ndy"
+    },
+    "RUN_FEB": {
+      "short": "Runs an feb file or all files in sub-folder of an input folder.",
+      "long": "ndy"
+    },
+    "CREATE_STORAGE_FOLDER": {
+      "short": "Creates the main folders of a study storage.",
+      "long": "ndy"
+    },
+    "CALCULATE_RESULTS": {
+      "short": "ndy",
+      "long": "ndy"
+    },
+    "MODIFY_PARAMETER": {
+      "short": "Modifies given parameters of a feb file.",
+      "long": "ndy"
+    },
+    "PREPARE_PARAMETER_STUDY": {
+      "short": "Prepares a parametric study.",
+      "long": "ndy"
+    },
+    "MAKE_PICKLE": {
+      "short": "Makes a pickle from a colection of result files.",
+      "long": "ndy"
+    }
+  }
+}

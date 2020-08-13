@@ -18,6 +18,8 @@ from .. classes import FEBio_soup, FEBio_xml_parser
 from .modify_parameter import modify_parameter
 from .run_feb import run_feb
 
+from .. sys_functions.get_inputs import get_path_to_FEB_files, get_optional_input
+from .. logger import console_log as log
 
 def extract_training_data(data, param):
 	p = data["parameters"][param]
@@ -77,18 +79,15 @@ def join_p_string(s1, s2):
 	return "[" + s1 +","+s2+"]"
 
 def prepare_parameter_study(inputs):
-	print("=== Preparing parameter study ===")
+	function_name = 'PREPARE_PARAMETER_STUDY'
+	log.log_step("\n== {} ==\n".format(function_name))
 
-	# Get inputs
-	if POSSIBLE_INPUTS.FEB_FILE in inputs:
-		path_to_feb = inputs[POSSIBLE_INPUTS.FEB_FILE]
-		feb_filename = path_to_feb.split("\\")[-1]
-		path_feb_files = [(path_to_feb, feb_filename,feb_filename[:-4])]
-	else:
-		path_feb_files = find_files(inputs[POSSIBLE_INPUTS.INPUT_FOLDER],("fileFormat","feb"))
+	# GET RA Inputs
+	path_feb_files = get_path_to_FEB_files(inputs)
 
-	output_folder = inputs[POSSIBLE_INPUTS.OUTPUT_FOLDER]
-	config_file = inputs[POSSIBLE_INPUTS.CONFIG_FILE]
+	# Get optional Inputs
+	output_folder = get_optional_input(inputs, 'OUTPUT_FOLDER', function_name)
+	config_file = get_optional_input(inputs, 'CONFIG_FILE', function_name)
 
 	position_data_file_path = join(output_folder,"position_data.txt")
 	displacement_data_file_path = join(output_folder,"displacement_data.txt")

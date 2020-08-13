@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 from os.path import isfile, join
+from .. logger import console_log as log
 
 class FEBio_xml_parser():
 	def __init__(self, path_to_feb_file, skip_tag_inspector=False):
@@ -25,17 +26,17 @@ class FEBio_xml_parser():
 
 	def initialize(self):
 		if not self.was_initialized:
-			print("Initializing...")
-			print("-Parsing.")
+			log.log_message("Initializing...")
+			log.log_message("-Parsing.")
 			self.tree = ET.parse(self.path_to_file)
-			print("-Rooting.")
+			log.log_message("-Rooting.")
 			self.root = self.tree.getroot()
-			print("-Finding tags.")
+			log.log_message("-Finding tags.")
 			for child in self.root:
 				tag_name = child.tag
 				if not hasattr(self,tag_name):
 					self.set_tag_obj_ref(child)
-					print("--Found:", tag_name + ".")
+					log.log_message("--Found: {}.".format(tag_name))
 			self.was_initialized = True
 
 	def has_tag(self,tag):
@@ -86,7 +87,7 @@ class FEBio_xml_parser():
 		return tree, root 
 
 	def add_tag(self, content, branch=None, insert_pos=-1):
-		print("Adding tag...")
+		log.log_message("Adding tag...")
 		# Parse content
 		tree, root = self.parse(content)
 
@@ -103,13 +104,12 @@ class FEBio_xml_parser():
 					else:
 						insert_pos = props_idx
 						# for tag_to_find in reversed(self.props_order[:props_idx]):
-						# 	print("tag_to_find: ", tag_to_find)
+						# 	log.log_message("tag_to_find: ", tag_to_find)
 						# 	if tag_to_find in self.existing_tags:
-						# 		print("tag_to_find index: ", self.existing_tags.index(tag_to_find))
+						# 		log.log_message("tag_to_find index: ", self.existing_tags.index(tag_to_find))
 						# 		curr_loc = self.existing_tags.index(tag_to_find)
 						# 		insert_pos = curr_loc + 1 if curr_loc > 1 else 0
 						# 		break
-					print("Adding: ", tag_name, "props_idx: ", props_idx, "| must add at pos: ", insert_pos)
 			else:
 				insert_pos = -1
 
@@ -129,7 +129,7 @@ class FEBio_xml_parser():
 				a = getattr(self,branch)
 
 			# exists = a.find(root.tag)
-			# print("exists: ", exists)
+			# log.log_message("exists: ", exists)
 			# if exists != None:
 			# 	exists.text = root.text
 			# else:
@@ -139,7 +139,7 @@ class FEBio_xml_parser():
 			else:
 				a.insert(insert_pos, root)
 
-		print("-Added:", root.tag + ".")
+		log.log_message("-Added: {}.".format(root.tag))
 
 	def modify_tag(self, tag, content, branch):
 
@@ -161,13 +161,13 @@ class FEBio_xml_parser():
 					new_a = a.find(sr)
 					if new_a != None:
 						a = new_a
-			# 		print("inter a:", a)
-			# print("final a:",a)
+			# 		log.log_message("inter a:", a)
+			# log.log_message("final a:",a)
 					# if hasattr(a,sr) == True:
 					# 	a = getattr(a,sr)
-					# 	print("new a:", a)
+					# 	log.log_message("new a:", a)
 					# else:
-					# 	print("*** Warning; Could not get sub_tag", tag, "from", branch[0],". It does not have such sub_tag")
+					# 	log.log_message("*** Warning; Could not get sub_tag", tag, "from", branch[0],". It does not have such sub_tag")
 		else:
 			a = getattr(self,branch)
 
@@ -177,9 +177,7 @@ class FEBio_xml_parser():
 		else:
 			a.insert(0,content)
 		
-		print("exists.text", exists.text)
-		
-		print('-Modified tag:', tag)
+		log.log_message('-Modified tag: {}'.format(tag))
 
 	def get_geometry_data(self):
 		nodes = []
@@ -200,7 +198,7 @@ class FEBio_xml_parser():
 		return nodes, elems
 
 	def add_fibers(self,df_fibers):
-		print("Adding fibers...")
+		log.log_message("Adding fibers...")
 		# Create MeshData Element
 		mesh_data = ET.Element('MeshData')
 		# Create sub-elements for each element set and list first id of each sub-element
@@ -226,7 +224,7 @@ class FEBio_xml_parser():
 		# Create node sub_elements
 		l_first_ids = len(first_ids)
 		belongs = 0
-		# print("i", 0, "belongs", belongs, "elems_ref", elems_ref[belongs])
+		# log.log_message("i", 0, "belongs", belongs, "elems_ref", elems_ref[belongs])
 		local_id = 0
 		for i, row in enumerate(df_fibers.itertuples()):
 			# if i + 1 > last_elem_with_fiber:
@@ -237,7 +235,7 @@ class FEBio_xml_parser():
 					local_id = 0
 
 			local_id += 1
-					# print("i", i, "belongs", belongs, "elems_ref", elems_ref[belongs])
+					# log.log_message("i", i, "belongs", belongs, "elems_ref", elems_ref[belongs])
 					
 			# Set fiber info
 			# fid = row[0] + int(first_ids[0])
@@ -289,15 +287,15 @@ class FEBio_xml_parser():
 
 	def write_feb(self, path_to_output_folder, file_name):
 		file_name = file_name + ".feb" if file_name[-4:] != ".feb" else file_name
-		print("Indenting root...")
+		log.log_message("Indenting root...")
 		self.indent(self.root)
-		print("Writing file...")
+		log.log_message("Writing file...")
 		self.tree.write(join(path_to_output_folder,file_name),encoding="ISO-8859-1")
 
 
 
 # if __name__ == "__main__":
-# 	print("hello")
+# 	log.log_message("hello")
 
 
 # 	path = "C:\\Users\\IgorNobrega\\University of South Florida\\Mao, Wenbin - Myocardium (organized)\\Active\\Guccione_study\\raw\\myo_tet_4_fine.feb"
@@ -311,4 +309,4 @@ class FEBio_xml_parser():
 # 	o.add_tag("<a>   500  </a>", branch=("Material","material1"))
 
 # 	nodes, elems = o.get_geometry_data()
-# 	print(len(elems))
+# 	log.log_message(len(elems))

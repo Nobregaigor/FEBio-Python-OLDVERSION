@@ -6,7 +6,8 @@ from prettierfier import prettify_xml
 from os.path import join
 
 from .. enums import POSSIBLE_INPUTS
-
+from .. sys_functions.get_inputs import get_required_input, get_optional_input
+from .. logger import console_log as log
 
 def calculate_polynomial(coeff,t_initial,t_final,resolution,plot=False):
 	
@@ -36,11 +37,21 @@ POSSIBLE_CURVES = {
 }
 
 def create_load_curve_xml(inputs):
-	print("\n== Creating load curve ==")
-	curve_name  = inputs[POSSIBLE_INPUTS.CURVE_NAME]
-	curve_model = inputs[POSSIBLE_INPUTS.CURVE_MODEL].upper()
-	curve_type  = inputs[POSSIBLE_INPUTS.CURVE_TYPE].lower()
-	curve_folder = inputs[POSSIBLE_INPUTS.CURVE_FOLDER]
+	function_name = 'CREATE_LOADCURVE'
+	log.log_step("\n== {} ==\n".format(function_name))
+
+	curve_name = get_required_input(inputs, 'CURVE_NAME', function_name)
+	curve_model = get_required_input(inputs, 'CURVE_MODEL', function_name)
+	curve_type = get_optional_input(inputs, 'CURVE_FOLDER', function_name)
+	curve_folder = get_optional_input(inputs, 'CURVE_TYPE', function_name)
+
+	curve_model = curve_model.upper() if curve_model != None else None
+	curve_type = curve_type.lower() if curve_type != None else None
+
+	# curve_name  = inputs[POSSIBLE_INPUTS.CURVE_NAME]
+	# curve_model = inputs[POSSIBLE_INPUTS.CURVE_MODEL].upper()
+	# curve_type  = inputs[POSSIBLE_INPUTS.CURVE_TYPE].lower()
+	# curve_folder = inputs[POSSIBLE_INPUTS.CURVE_FOLDER]
 
 	# Check if curve params are correctly inputed
 	try:

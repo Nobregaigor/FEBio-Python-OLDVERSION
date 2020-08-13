@@ -1,5 +1,4 @@
-from modules import get_input_arguments, COMMAND_FUNCTION
+from modules.cli.cli_main import main
 
 if __name__ == "__main__":
-	command, inputs = get_input_arguments()
-	COMMAND_FUNCTION[command](inputs)
+    main()

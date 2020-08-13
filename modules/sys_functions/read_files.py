@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import json
 
 def read_xml(path_to_file, skip_header=False):
 	print("Reading file:", path_to_file)
@@ -11,3 +12,16 @@ def read_xml(path_to_file, skip_header=False):
 		except:
 			print("*** Non-fatal ERROR: xml file provided", path_to_file," could not be converted to soup.")
 			return None
+
+
+def read_json(path_to_json):
+	with open(path_to_json) as f:
+		return json.load(f)
+
+
+
+
+
+
+
+

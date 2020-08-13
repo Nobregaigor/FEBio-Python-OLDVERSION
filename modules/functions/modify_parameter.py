@@ -7,26 +7,27 @@ from os.path import join, exists
 from ast import literal_eval
 
 from .. enums import POSSIBLE_INPUTS
+from .. classes import FEBio_soup, FEBio_xml_parser
 from .. sys_functions.find_files_in_folder import find_files
 from .. sys_functions.read_files import read_xml
 from .. sys_functions.write_files import write_csv
-from .. classes import FEBio_soup, FEBio_xml_parser
-
+from .. sys_functions.get_inputs import get_path_to_FEB_files, get_optional_input
+from .. logger import console_log as log
 
 def modify_parameter(inputs):
-	print("=== Modifying tag ===")
+	function_name = 'MODIFY_PARAMETER'
+	log.log_step("\n== {} ==\n".format(function_name))
 
-	# Get inputs
-	if POSSIBLE_INPUTS.FEB_FILE in inputs:
-		path_to_feb = inputs[POSSIBLE_INPUTS.FEB_FILE]
-		feb_filename = path_to_feb.split("\\")[-1]
-		path_feb_files = [(path_to_feb, feb_filename,feb_filename[:-4])]
-	else:
-		path_feb_files = find_files(inputs[POSSIBLE_INPUTS.INPUT_FOLDER],("fileFormat","feb"))
+	# GET RA Inputs
+	path_feb_files = get_path_to_FEB_files(inputs)
 
-	params_to_modify = literal_eval(inputs[POSSIBLE_INPUTS.PARAM_VALS])
-	output_folder = inputs[POSSIBLE_INPUTS.OUTPUT_FOLDER]
-	make_new_file = inputs[POSSIBLE_INPUTS.SAVE_AS_NEW]
+	# Get optional Inputs
+	params_to_modify = get_optional_input(inputs, 'PARAM_VALS', function_name)
+	output_folder = get_optional_input(inputs, 'OUTPUT_FOLDER', function_name)
+	make_new_file = get_optional_input(inputs, 'SAVE_AS_NEW', function_name)
+
+	# eval params
+	params_to_modify = literal_eval(params_to_modify)
 
 	# print("Interpreted params: ", params_to_modify)
 	

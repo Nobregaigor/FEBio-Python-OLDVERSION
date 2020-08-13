@@ -12,7 +12,8 @@ import ntpath
 
 from .. enums import POSSIBLE_INPUTS, POSSIBLE_COMMANDS, INPUT_DEFAULTS, PATH_TO_STORAGE
 from .. sys_functions.find_files_in_folder import find_files
-
+from .. sys_functions.get_inputs import get_path_to_FEB_files, get_optional_input
+from .. logger import console_log as log
 
 
 # define headers
@@ -81,17 +82,18 @@ def compile_data(files):
 	for i, (fp, _, _) in enumerate(files):
 		ndf = pd.read_pickle(fp)
 		frames.append(ndf)
-		print("compiled pickle: ", (i + 1) /total_files)
+		log.log_message("compiled pickle: ", (i + 1) /total_files)
 		df = pd.concat(frames, ignore_index=True)
 	return df
 
 def make_pickle(inputs):
-	print("== MAKE PICKLE ==")
+	function_name = 'MAKE_PICKLE'
+	log.log_step("\n== {} ==\n".format(function_name))
 
-	# Get files
-	print("-- Getting input files")
-	inp_folder = inputs[POSSIBLE_INPUTS.INPUT_FOLDER]
-	out_folder = inputs[POSSIBLE_INPUTS.OUTPUT_FOLDER]
+	# Get optional Inputs
+	inp_folder = get_optional_input(inputs, 'INPUT_FOLDER', function_name)
+	out_folder = get_optional_input(inputs, 'OUTPUT_FOLDER', function_name)
+
 
 	inpf_name = ntpath.basename(inp_folder)
 
@@ -116,7 +118,7 @@ def make_pickle(inputs):
 	str_files = {}
 	dis_files = {}
 	pos_files = {}
-	print("-- Sorting files")
+	log.log_message("-- Sorting files")
 	for (fp, ff, fn) in files:
 		fs = fn.split("_")
 		if len(fs) == 2:
@@ -134,19 +136,19 @@ def make_pickle(inputs):
 
 	# -----------------
 	# Determining critial values
-	print("-- Checking lengths")
+	log.log_message("-- Checking lengths")
 	lengths = [len(l) for l in files]
 	idxmin = lengths.index(min(lengths)) 
 	baseDict = files[idxmin]
 	baseDictLength = len(baseDict)
 
 	# get param values
-	print("-- Getting params")
+	log.log_message("-- Getting params")
 	params = get_param_val(param_file[0])
 
 	# -----------------
 	# create dataframe
-	print("-- Creating dataframe")
+	log.log_message("-- Creating dataframe")
 	header = create_header()
 	df = pd.DataFrame(columns=header)
 	rowCounter = 0
@@ -154,7 +156,7 @@ def make_pickle(inputs):
 
 	# -----------------
 	# creating temporary pickles
-	print("-- Filling dataframe")
+	log.log_message("-- Filling dataframe")
 	for i, key in enumerate(baseDict):
 
 		if key in params:
@@ -176,11 +178,11 @@ def make_pickle(inputs):
 		stdout.flush()
 		if i % 100 == 0 and i != 0:
 			# Log
-			print("\nBatch: #", fileCounter, "->", i/baseDictLength,"%")
+			log.log_message("\nBatch: #{fc} -> {pc}%".format(fc=fileCounter, pc = i/baseDictLength))
 			df.to_pickle(join(temp_folder,"data%s.pickle" % fileCounter))
 			# create new instance
 			df = pd.DataFrame(columns=header)
-			# print(df)
+			# log.log_message(df)
 			rowCounter = 0
 			fileCounter += 1
 
@@ -196,7 +198,7 @@ def make_pickle(inputs):
 
 	# -----------------
 	# creating final pickle
-	print("-- Compiling pickle files")
+	log.log_message("-- Compiling pickle files")
 	pickle_files = find_files(temp_folder, ("fileFormat","pickle"))
 	df = compile_data(pickle_files)
 	df.to_pickle(join(out_folder, inpf_name + ".pickle"))

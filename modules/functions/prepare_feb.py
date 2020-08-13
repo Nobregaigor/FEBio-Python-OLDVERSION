@@ -15,6 +15,8 @@ from .add_fibers_to_feb import add_fibers_to_feb
 from .add_fibers_to_feb2 import add_fibers_to_feb2
 from .run_feb import run_feb
 
+from .. sys_functions.get_inputs import get_path_to_FEB_files, get_optional_input
+from .. logger import console_log as log
 
 def prepare_feb(inputs):
 
