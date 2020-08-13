@@ -17,9 +17,11 @@ ID = CONFIG['INPUT_DEFAULTS']
 
 PATH_TO_FEBIOPYTHON = DIRECTORIES['FEBIO_PYTHON']
 
-JOIN_DIRS = CONFIG['JOIN_DIRS']
+PATH_TO_README = join(PATH_TO_FEBIOPYTHON, "README.md")
+JOIN_DIRS = eval(CONFIG['JOIN_DIRS'])
+JOIN_MATLAB_FOLDER = eval(CONFIG['JOIN_MATLAB_FOLDER'])
 
-if JOIN_DIRS == 'True':
+if JOIN_DIRS == True:
     PATH_TO_STORAGE = join(DIRECTORIES['CORE'], DIRECTORIES['WORKING'], DIRECTORIES['STORAGE'])
 
 else:
@@ -30,8 +32,13 @@ def set_input_defaults():
     input_defaults = {}
     for cmd in CONFIG['INPUT_DEFAULTS']:
         for inp in CONFIG['INPUT_DEFAULTS'][cmd]:
-            if INPUT_TYPES[POSSIBLE_INPUTS[inp]] == INPUT_TYPES_ENUM.PATH and JOIN_DIRS == 'True':
-                    inp_val = join(PATH_TO_STORAGE, ID[cmd][inp])
+            if INPUT_TYPES[POSSIBLE_INPUTS[inp]] == INPUT_TYPES_ENUM.PATH:
+                    if JOIN_DIRS == True:
+                        inp_val = join(PATH_TO_STORAGE, ID[cmd][inp])
+
+                    if INPUT_TYPES[POSSIBLE_INPUTS[inp]] == POSSIBLE_INPUTS.PATH_TO_MATLAB_FOLDER and JOIN_MATLAB_FOLDER == True:
+                        inp_val = join(PATH_TO_FEBIOPYTHON, ID[cmd][inp])
+                    
             else:
                 inp_val = ID[cmd][inp]
 

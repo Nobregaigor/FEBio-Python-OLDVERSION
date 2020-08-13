@@ -7,6 +7,7 @@
     "STORAGE": "testing"
   },
   "JOIN_DIRS": "True",
+  "JOIN_MATLAB_FOLDER": "True",
   "INPUT_DEFAULTS": {
     "ADD_PROPERTIES": {
         "INPUT_FOLDER": "raw",

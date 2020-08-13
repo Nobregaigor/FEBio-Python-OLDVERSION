@@ -4,6 +4,8 @@ import click
 import webbrowser
 from ..enums.possible_commands import POSSIBLE_COMMANDS, POSSIBLE_INPUTS, COMMAND_INPUT, INPUT_FLAG
 from ..enums.defaults import INPUT_DEFAULTS
+from .. sys_functions import update_readme
+
 from .. import COMMAND_FUNCTION
 # from ..cli import console_log as log
 from ..logger import console_log as log
@@ -241,6 +243,28 @@ def PREPARE_PARAMETER_STUDY(**kargs):
 def MAKE_PICKLE(**kargs):
     return run_command(POSSIBLE_COMMANDS.MAKE_PICKLE, kargs)
 
+
+#! - - - - - - - - - - - - - - - - - - - - -
+#! readme command -> click sub group
+@main.group(short_help="Simple CLI to display and manage README", help="Executes one of the commands listed below.")
+def readme():
+    pass
+
+@readme.command(short_help="Display README", help="Display README")
+def show():
+    update_readme.print_readme()
+
+@readme.command(short_help="Update descriptions of possible inputs", help="Update descriptions of possible inputs")
+def update_input_descriptions():
+    update_readme.update_input_descriptions()
+
+@readme.command(short_help="Display descriptions of possible commands", help="Display descriptions of possible commands")
+def update_command_descriptions():
+    update_readme.update_command_descriptions()
+
+@readme.command(short_help="Display descriptions of possible commands", help="Display descriptions of possible commands")
+def update_reference_list():
+    update_readme.update_reference_list()
 
 #! - - - - - - - - - - - - - - - - - - - - -
 #! run command -> click sub group
