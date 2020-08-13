@@ -4,7 +4,11 @@
 
 FEBio-Python is an open source repo for optmizing FEA studies using FEBio solver. The library makes it possible to easily set up parametric studies, modify .feb files using command line. One can also use it to run several feb files and extract geometric and result files from each simulation.
 
-### Contribute!
+#### FEBio
+
+The FEBio software suite is a set of software tools for nonlinear finite element analysis in biomechanics and biophysics. To learn more, visit their website https://febio.org/ or their repo: https://github.com/febiosoftware/FEBio.git.
+
+#### Contribute!
 
 All ideas are welcome. Open/close issues, fork the repo, implement your own functions and share your code with a Pull Request. You can clone this project to your machine with:
 
@@ -12,11 +16,82 @@ All ideas are welcome. Open/close issues, fork the repo, implement your own func
 git clone https://github.com/Nobregaigor/FEBio-Python.git
 ```
 
-### Guidelines
+# Installation
+
+### To install FEBio-Python using pip:
+ (future implementation)
+
+### Download or clone from this repository:
+```bash
+git clone https://github.com/Nobregaigor/FEBio-Python.git
+```
+### Dependencies
+
+FEBio-Python depends on the following packages:
+```
+six == 1.15.0
+pyfiglet == 0.8.post1
+pandas == 1.0.5
+colorama == 0.4.3
+scipy == 1.4.1
+prettierfier == 1.0.3
+termcolor == 1.1.0
+matplotlib == 3.3.0
+numpy == 1.19.1
+click == 7.1.2
+beautifulsoup4 == 4.9.1
+PyInquirer == 1.0.3
+```
+To install dependencies with pip, run:
+```bash
+pip install six pyfiglet pandas colorama scipy prettierfier termcolor matplotlib numpy click beautifulsoup4 PyInquirer
+```
+
+# Usage
+### How to run:
+In the project's folder directory, run:
+```
+ $ .\main.py run [COMMAND] [COMMAND-OPTIONS]
+```
+### Example:
+```
+ $ .\main.py run add-properties --INPUT_FOLDER 'path/to/input/folder'
+```
+### The help command:
+You can ask for help at any command in the CLI:
+```
+ $ .\main.py --help
+```
+Or, to show a list of possible commands:
+```
+ $ .\main.py run --help
+```
+Or, to show a list of inputs accepted by the command:
+```
+ $ .\main.py run add-properties --help
+```
+### Command input requirement types:
+Each command requires a certain list of inputs, however, if you are using a config file, you do not need to keep providing all the inputs at all times. Each input is categorized into one of the following type:
+* Required **(R)**: Must be included in the command line every time the command is executed. There is no reference to it in the config file.
+* Required, but has alternative options **(RA)**: The input is require, but there are different choices that satisfy its category. For instance, in some functions you can use FEB_FILE or INPUT_FILE with the same meaning. 
+* Optional **(O)**: Inputs categorized as optional can have a reference to it in the config file. When the function is executed, if the given input is not listed withn its command, the program will look for it in the config file. If the program does not find its reference, it might cause issues at run time.
+To check which input and what type of input the command requires, check the Reference list.
+
+### The config file:
+The config file must be present at the root of the project's directory. Within the config file, you are able to establish directories and input values to be used along with FEBio-Python. You can list pre-defined arguments for each command with an optional input (see previous section). 
+
+Also, for inputs that requires PATH attributes, you can opt to use a 'working/storage' directory or provide the absolute path to its file/directory. However, if you choose to manually include the path, you must provide the absolute path for all inputs, otherwise the program will join the project's core directory with the given path.
+
+### To learn more:
+Check the project's guidelines for a list of commands and their possible inputs. To learn more about each command or input individually, check the descriptions section.
+
+
+
+# Guidelines
 
 ---
 
-##### Reference list
+### Reference list
 
 
 | Commands | Description | Inputs |
@@ -35,11 +110,11 @@ git clone https://github.com/Nobregaigor/FEBio-Python.git
 | PREPARE_PARAMETER_STUDY | Prepares a parametric study. | <ul><li>CONFIG_FILE (R).</li><li>FEB_FILE (RA).</li><li>INPUT_FILE (RA).</li><li>INPUT_FOLDER (RA).</li><li>OUTPUT_FOLDER (O).</li></ul> |
 | MAKE_PICKLE | Makes a pickle from a colection of result files. | <ul><li>INPUT_FOLDER (O).</li><li>OUTPUT_FOLDER (O).</li></ul> |
 
-### Descriptions of Commands and Inputs
+# Descriptions of Commands and Inputs
 
 ---
 
-##### List of Commands
+### List of Commands
 
 
 | Commands | Description |
@@ -59,7 +134,7 @@ git clone https://github.com/Nobregaigor/FEBio-Python.git
 | PREPARE_PARAMETER_STUDY | Prepares a parametric study. |
 | MAKE_PICKLE | Makes a pickle from a colection of result files. |
 
-##### List of Inputs
+### List of Inputs
 
 
 | Inputs | Description |
