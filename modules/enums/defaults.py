@@ -34,10 +34,10 @@ def set_input_defaults():
         for inp in CONFIG['INPUT_DEFAULTS'][cmd]:
             if INPUT_TYPES[POSSIBLE_INPUTS[inp]] == INPUT_TYPES_ENUM.PATH:
                     if JOIN_DIRS == True:
-                        inp_val = join(PATH_TO_STORAGE, ID[cmd][inp])
-
-                    if INPUT_TYPES[POSSIBLE_INPUTS[inp]] == POSSIBLE_INPUTS.PATH_TO_MATLAB_FOLDER and JOIN_MATLAB_FOLDER == True:
-                        inp_val = join(PATH_TO_FEBIOPYTHON, ID[cmd][inp])
+                        if POSSIBLE_INPUTS[inp] == POSSIBLE_INPUTS.PATH_TO_MATLAB_FOLDER:
+                            inp_val = join(PATH_TO_FEBIOPYTHON, ID[cmd][inp])
+                        else:
+                            inp_val = join(PATH_TO_STORAGE, ID[cmd][inp])
                     
             else:
                 inp_val = ID[cmd][inp]
