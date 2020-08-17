@@ -6,10 +6,10 @@ from os.path import basename
 
 def get_path_to_FEB_files(inputs):
   """ Gets the path to FEB file given the RA inputs"""
-  if inputs[POSSIBLE_INPUTS.INPUT_FILE] != None:
+  if POSSIBLE_INPUTS.INPUT_FILE in inputs and inputs[POSSIBLE_INPUTS.INPUT_FILE] != None:
       path_to_feb = inputs[POSSIBLE_INPUTS.INPUT_FILE]
       path_feb_files = [(path_to_feb, basename(path_to_feb), feb_filename[:-4])]
-  elif inputs[POSSIBLE_INPUTS.FEB_FILE] != None:
+  elif POSSIBLE_INPUTS.FEB_FILE in inputs and inputs[POSSIBLE_INPUTS.FEB_FILE] != None:
       path_to_feb = inputs[POSSIBLE_INPUTS.INPUT_FILE]
       path_feb_files = [(path_to_feb, basename(path_to_feb), feb_filename[:-4])]
   else:
@@ -19,7 +19,7 @@ def get_path_to_FEB_files(inputs):
 def get_optional_input(inputs, input_type, action_type):
   inp_val = None
   
-  if inputs[POSSIBLE_INPUTS[input_type]] != None:
+  if POSSIBLE_INPUTS[input_type] in inputs and inputs[POSSIBLE_INPUTS[input_type]] != None:
       inp_val = inputs[POSSIBLE_INPUTS[input_type]]
   else:
     if POSSIBLE_INPUTS[input_type] in INPUT_DEFAULTS[POSSIBLE_COMMANDS[action_type]]:

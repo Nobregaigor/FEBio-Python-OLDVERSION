@@ -1,10 +1,10 @@
 {
-  "DEBUG": "False",
+  "DEBUG": "True",
   "DIRECTORIES": {
     "FEBIO_PYTHON": "D:\\Igor\\GitHub\\FEBio-Python",
     "CORE": "D:\\Igor\\Research_USF\\University of South Florida\\Mao, Wenbin - Igor\\Febio-Models",
     "WORKING": "Mesh-Studies",
-    "STORAGE": "testing"
+    "STORAGE": "Hex_mesh_8layers"
   },
   "JOIN_DIRS": "True",
   "JOIN_MATLAB_FOLDER": "True",
