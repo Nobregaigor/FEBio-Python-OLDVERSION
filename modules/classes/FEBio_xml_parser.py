@@ -179,10 +179,11 @@ class FEBio_xml_parser():
 		
 		log.log_message('-Modified tag: {}'.format(tag))
 
-	def get_geometry_data(self):
+	def get_geometry_data(self, what=[], return_nodes=True, return_elems=True):
 		nodes = []
 		elems = []
 
+		return_selected = list()
 		if self.has_tag("Geometry"):
 			for node in self.Geometry.find("Nodes").findall("node"): 		# pylint: disable=no-member
 				a = [node.get('id')]
@@ -195,7 +196,28 @@ class FEBio_xml_parser():
 					a.extend([float(b) for b in str(elem.text).split(",")])
 					elems.append(a)
 
-		return nodes, elems
+			if len(what) > 0:
+				for item in what:
+					selected_items = {}
+					for catg in self.Geometry.findall(item[0]):
+						if catg.attrib["name"] == item[1]:
+							selected_items[item[1]] = []
+							for c in catg.findall(item[2]):
+								a = [c.get("id")]
+								if c.text != None:
+									a.extend([float(b) for b in str(c.text).split(",")])
+								selected_items[item[1]].append(a)
+					return_selected.append(selected_items)
+		
+		to_return = list()
+		if return_nodes == True:
+			to_return.append(nodes)
+		if return_elems == True:
+			to_return.append(elems)
+		if len(return_selected) > 0:
+			to_return.extend(return_selected) 
+
+		return to_return
 
 	def add_fibers(self,df_fibers):
 		log.log_message("Adding fibers...")

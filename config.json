@@ -4,7 +4,7 @@
     "FEBIO_PYTHON": "D:\\Igor\\GitHub\\FEBio-Python",
     "CORE": "D:\\Igor\\Research_USF\\University of South Florida\\Mao, Wenbin - Igor\\Febio-Models",
     "WORKING": "Mesh-Studies",
-    "STORAGE": "Hex_mesh_8layers"
+    "STORAGE": "MeshIndependenceStudy_HOTE"
   },
   "JOIN_DIRS": "True",
   "JOIN_MATLAB_FOLDER": "True",

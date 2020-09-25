@@ -29,8 +29,8 @@ def prepare_feb(inputs):
 
     # Set fiber variations:
 
-    fibers_variations = [45, 50, 55, 60, 65, 70, 75, 80, 85]
-    # fibers_variations = [60]
+    # fibers_variations = [45, 50, 55, 60, 65, 70, 75, 80, 85]
+    fibers_variations = [60]
 
     #########################################
     # Set order of functions to be executed
@@ -48,7 +48,7 @@ def prepare_feb(inputs):
 
     # Part 3: add fibers
     to_execute_3 = [
-        add_fibers_to_feb,
+        # add_fibers_to_feb,
         add_fibers_to_feb,
     ]
 
@@ -76,11 +76,11 @@ def prepare_feb(inputs):
         # to_input_2[i][POSSIBLE_INPUTS.MATLAB_PARAMS] = "{'endo':" + str(-fib_dir) +",'epi':" + str(fib_dir) + "}"
 
     to_input_3 = [
-        {
-            POSSIBLE_INPUTS.INPUT_FOLDER: join(PATH_TO_STORAGE, "with_properties"),
-            POSSIBLE_INPUTS.OUTPUT_FOLDER: join(PATH_TO_STORAGE, "with_fibers"),
-            POSSIBLE_INPUTS.FIBERS_DATA_FOLDER: join(PATH_TO_STORAGE, "fibers_data"),
-        },
+        # {
+        #     POSSIBLE_INPUTS.INPUT_FOLDER: join(PATH_TO_STORAGE, "with_properties"),
+        #     POSSIBLE_INPUTS.OUTPUT_FOLDER: join(PATH_TO_STORAGE, "with_fibers"),
+        #     POSSIBLE_INPUTS.FIBERS_DATA_FOLDER: join(PATH_TO_STORAGE, "fibers_data"),
+        # },
         {
             POSSIBLE_INPUTS.INPUT_FOLDER: join(PATH_TO_STORAGE, "with_load"),
             POSSIBLE_INPUTS.OUTPUT_FOLDER: join(PATH_TO_STORAGE, "with_fibers"),
@@ -98,13 +98,13 @@ def prepare_feb(inputs):
 
     to_execute = []
     to_execute.extend(to_execute_1)
-    # to_execute.extend(to_execute_2)
+    to_execute.extend(to_execute_2)
     to_execute.extend(to_execute_3)
     to_execute.extend(to_execute_4)
 
     to_input = []
     to_input.extend(to_input_1)
-    # to_input.extend(to_input_2)
+    to_input.extend(to_input_2)
     to_input.extend(to_input_3)
     to_input.extend(to_input_4)
 

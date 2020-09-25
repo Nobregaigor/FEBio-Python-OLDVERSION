@@ -180,7 +180,7 @@ def EXTRACT_GEOMETRY_DATA(**kargs):
 @click.option(CLI_INPUTS[POSSIBLE_INPUTS.FEB_NAME], '-n', type=click.STRING, help=IO_HELP_TEXTS['INPUT_FILE'])
 @click.option(CLI_INPUTS[POSSIBLE_INPUTS.GEOMETRY_DATA_FOLDER], '-f', type=click.Path(exists=True, file_okay=False), help=IO_HELP_TEXTS['GEOMETRY_DATA_FOLDER'])
 @click.option(CLI_INPUTS[POSSIBLE_INPUTS.PATH_TO_MATLAB_FOLDER], '-m', type=click.Path(exists=True, file_okay=False), help=IO_HELP_TEXTS['PATH_TO_MATLAB_FOLDER'])
-@click.option(CLI_INPUTS[POSSIBLE_INPUTS.MATLAB_PARAMS], '-p', type=click.Path(exists=True, file_okay=False), help=IO_HELP_TEXTS['MATLAB_PARAMS'])
+@click.option(CLI_INPUTS[POSSIBLE_INPUTS.MATLAB_PARAMS], '-p', type=click.STRING, help=IO_HELP_TEXTS['MATLAB_PARAMS'])
 @click.option(CLI_INPUTS[POSSIBLE_INPUTS.OUTPUT_FOLDER], '-o', type=click.Path(file_okay=False), help=IO_HELP_TEXTS['OUTPUT_FOLDER'])
 def CALCULATE_FIBERS(**kargs):
     return run_command(POSSIBLE_COMMANDS.CALCULATE_FIBERS, kargs)
