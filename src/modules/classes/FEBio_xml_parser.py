@@ -197,17 +197,21 @@ class FEBio_xml_parser():
 					elems.append(a)
 
 			if len(what) > 0:
+				# selected_items_list = []
+				selected_items = {}
 				for item in what:
-					selected_items = {}
+					
 					for catg in self.Geometry.findall(item[0]):
 						if catg.attrib["name"] == item[1]:
 							selected_items[item[1]] = []
-							for c in catg.findall(item[2]):
+							cat_list = list(catg) if item[2] == "any" else catg.findall(item[2])
+							for c in cat_list:
 								a = [c.get("id")]
 								if c.text != None:
 									a.extend([float(b) for b in str(c.text).split(",")])
 								selected_items[item[1]].append(a)
-					return_selected.append(selected_items)
+					# selected_items_list.append(selected_items)
+				return_selected.append(selected_items)
 		
 		to_return = list()
 		if return_nodes == True:
