@@ -228,7 +228,7 @@ def MODIFY_PARAMETER(**kargs):
 
 #! PREPARE_PARAMETER_STUDY
 @run.command(short_help=CM_HELP_TEXTS['PREPARE_PARAMETER_STUDY']['short'], help=CM_HELP_TEXTS['PREPARE_PARAMETER_STUDY']['long'])
-@click.option(CLI_INPUTS[POSSIBLE_INPUTS.CONFIG_FILE], '-c', type=click.Path(exists=True, file_okay=False), help=IO_HELP_TEXTS['CONFIG_FILE'])
+@click.option(CLI_INPUTS[POSSIBLE_INPUTS.CONFIG_FILE], '-c', type=click.Path(exists=True, file_okay=True), help=IO_HELP_TEXTS['CONFIG_FILE'])
 @click.option(CLI_INPUTS[POSSIBLE_INPUTS.INPUT_FILE], '-i', type=click.Path(exists=True, dir_okay=False), help=IO_HELP_TEXTS['INPUT_FILE'])
 @click.option(CLI_INPUTS[POSSIBLE_INPUTS.FEB_FILE], '-feb', type=click.Path(exists=True, dir_okay=False), help=IO_HELP_TEXTS['FEB_FILE'])
 @click.option(CLI_INPUTS[POSSIBLE_INPUTS.INPUT_FOLDER], '-f', type=click.Path(exists=True, file_okay=False), help=IO_HELP_TEXTS['INPUT_FOLDER'])

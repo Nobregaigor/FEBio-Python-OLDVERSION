@@ -36,7 +36,7 @@ def calculate_fibers(inputs):
 	# elems_files_hex = [f for f in files if f[1].find("_elems") != -1 and f[1].find("hex") != -1]
 	nodes_files_hexbase = [f for f in files if f[1].find("_nodes") != -1 and f[1].find("hexbase") != -1]
 	elems_files_hexbase = [f for f in files if f[1].find("_elems") != -1 and f[1].find("hexbase") != -1]
-
+	
 	for node_file in nodes_files:
 		fname = node_file[2].split("_nodes")[0]
 		log.log_substep("Calculating fibers for: {}.".format(fname))

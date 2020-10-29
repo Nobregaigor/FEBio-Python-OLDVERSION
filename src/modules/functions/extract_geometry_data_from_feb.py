@@ -20,7 +20,7 @@ def extract_geometry_data_from_feb(inputs):
 	for path_feb_file in path_feb_files:
 		# Create FEBio_soup instace
 		log.log_substep("Extracting geometry data from: {}.".format(path_feb_file[2]))
-		FEBio_xml = FEBio_xml_parser.FEBio_xml_parser(path_feb_file[0])
+		FEBio_xml = FEBio_xml_parser(path_feb_file[0])
 		# Insert properties as tags for each selected property
 		nodes, elems = FEBio_xml.get_geometry_data()
 		write_csv(path_feb_file[2] + "_nodes", nodes, path=path_o_folder)

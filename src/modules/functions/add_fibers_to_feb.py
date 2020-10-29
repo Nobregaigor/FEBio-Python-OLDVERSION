@@ -68,7 +68,7 @@ def add_fibers_to_feb(inputs):
 			df_fibers = pd.read_csv(fibers[0], header=None)
 			# meshdata = format_data_to_write(df_fibers)
 
-			febio_soup = FEBio_xml_parser.FEBio_xml_parser(p[0])
+			febio_soup = FEBio_xml_parser(p[0])
 			# meshdata_soup = febio_soup.parse(meshdata)
 			# febio_soup.add_tag(meshdata)
 			febio_soup.add_fibers(df_fibers)
