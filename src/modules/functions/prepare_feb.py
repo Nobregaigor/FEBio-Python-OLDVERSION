@@ -31,13 +31,20 @@ def prepare_feb(inputs):
     # Set fiber variations:
 
     # fibers_variations = [45, 50, 55, 60, 65, 70, 75, 80, 85]
-    endo_range = np.linspace(-80, -40, 5)
-    epid_range= -endo_range
+    #endo_range = [np.linspace(-80, -40, 5)]
+    #epid_range= -endo_range
+
+    epid_range = [ 42,  47,  54,  58,  63,  69,  71,  78]
+    endo_range = [-51, -44, -72, -56, -40, -61, -68, -75]
+
     fibers_variations = []
 
-    for endo in endo_range:
-        for epid in epid_range:
-            fibers_variations.append((endo, epid))
+    # for endo in endo_range:
+    #     for epid in epid_range:
+    #         fibers_variations.append((endo, epid))
+
+    for endo, epid in zip(endo_range, epid_range):
+        fibers_variations.append((endo, epid))
 
     #########################################
     # Set order of functions to be executed

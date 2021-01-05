@@ -1,27 +1,21 @@
-# To add a new cell, type ''
-# To add a new markdown cell, type ' [markdown]'
-
 import sys  
-import os
 from os import path
 import numpy as np
 import pandas as pd
 
-sys.path.append('../../src/')
+sys.path.append('../src/')
 
-from .modules.sys_functions.find_files_in_folder import find_files, find_folders, search_dirs
-from .modules.classes import Data_Manipulator
+from modules.sys_functions.find_files_in_folder import find_files, find_folders, search_dirs
+from modules.classes import Data_Manipulator
 
-
+runs_dir = "D:\\Igor\\Research_USF\\University of South Florida\\Mao, Wenbin - Igor\\Febio-Models\\Active-Models\\PAQ\\Pressure-Volume-2\\feb_files"
+feb_filename = "myo_hex_coarse_6_epi_60_endo_-60.feb"
 
 elems_keys = "sx;sy;sz;sxy;sxz;syz"
 nodes_keys = "x;y;z;ux;uy;uz"
 nodes_filename = "node.txt"
 elems_filename = "elem.txt"
 log_filename = "run_log.csv"
-feb_filename = "myo_hex_coarse_6_epi_60_endo_-60.feb"
-# runs_dir = "D:\\Igor\\Research_USF\\University of South Florida\\Mao, Wenbin - Igor\\Febio-Models\\Active-Models\\PAQ\\Hex8-Hex20\\runs\\Hex20"
-runs_dir = "./work_bgfs/i/igornobrega/FEBio/PAQ-GammaStudy/myo_hex_coarse_6_epi_60_endo_60_7/runs"
 
 df_dtypes = {
     'x': 'float32',
@@ -32,8 +26,8 @@ df_dtypes = {
     'uz': 'float32',
     'node': 'category',
     'timestep': 'float32',
-    'run_ref': 'uint8',
-    'param_val': 'float32',
+    'run_ref': 'category', #'uint8',
+    'param_val': 'category', #'float32',
     'sx': 'float32',
     'sy': 'float32',
     'sz': 'float32',
@@ -43,12 +37,15 @@ df_dtypes = {
     'elem': 'category'
     }
 
-# LOAD_FROM_PICKLES = True
+# This bool will check if the program should read raw txt files directly from results or read pre-created pickle files
 READ_PLOT_FILES = True
+USE_NUM_RUN_LOG = False
 
+# This bool lets you use this notebook for a single file
+SINGLE_FILE = False
+PARAM_VAL = 1 # Only used if SINGLE_FILE is true
 
 log_filepath = path.join(runs_dir, log_filename)
-
 run_dirs = find_folders(runs_dir)
 runs = []
 runs_nums = []
@@ -60,15 +57,18 @@ for (dp, dd, dn) in run_dirs:
         _files.extend(feb_files)
         _files.extend(txt_files)
         runs.append(_files)
-        runs_nums.append(int(dn.split("-")[-1]))
+        if not SINGLE_FILE:
+            if USE_NUM_RUN_LOG:
+                runs_nums.append(int(dn.split("-")[-1]))
+            else:
+                runs_nums.append(dn)
+        else:
+            runs_nums.append(1)
 
+if not SINGLE_FILE:
+    log_df = pd.read_csv(log_filepath)
 
-
-log_df = pd.read_csv(log_filepath)
-
-# # Create DataManipulators
-
-
+# This functions checks the total memory usage os a dataframe
 def mem_usage(pandas_obj):
     if isinstance(pandas_obj,pd.DataFrame):
         usage_b = pandas_obj.memory_usage(deep=True).sum()
@@ -77,8 +77,6 @@ def mem_usage(pandas_obj):
     usage_mb = usage_b / 1024 ** 2 # convert bytes to megabytes
     return usage_mb
 
-# Since we have the same geometry, we can use one DataManipulator as a reference
-# to save memory usage, we will be reading data from nodes/elements and saving into a pickle file
 
 pickles_dir = path.join(runs_dir, "pickles")
 tpm_pickles_dir = path.join(pickles_dir, "tpm")
@@ -88,9 +86,6 @@ new_dm = Data_Manipulator(feb_file_ref) # Using same file as ref since geometry 
 
 m_use = 0
 f_ctn = 0
-
-# if LOAD_FROM_PICKLES == True:
-#     dms = []
 
 if READ_PLOT_FILES:
     if not path.exists(tpm_pickles_dir):
@@ -110,7 +105,12 @@ if READ_PLOT_FILES:
             # print(feb_file)
             # new_dm = Data_Manipulator(feb_file)
             run_num = runs_nums[i]
-            param_val = log_df.loc[log_df["run#"] == run_num]["param"].values[0]
+            if not SINGLE_FILE:
+                param_val = log_df.loc[log_df["run#"] == run_num]["param"].values[0]
+                # if type(run_num) != int() or type(run_num) != float():
+                #     run_num = log_df.loc[log_df["run#"] == run_num].index.values[0]
+            else:
+                param_val = PARAM_VAL
             if nodes_file != None and elems_file != None:
                 pickle_filename = "data-run-{v}.pickle".format(v = run_num)
                 new_dm.read_plot_file([nodes_file, elems_file], [nodes_keys, elems_keys], ["node", "elem"], "", run_num, param_val, df_dtypes)
@@ -120,15 +120,11 @@ if READ_PLOT_FILES:
                 new_dm.data.to_pickle(path.join(tpm_pickles_dir, pickle_filename))
             # dms.append(new_dm)
 
-
 if m_use != 0:
     print("Total memory usage:", m_use)
     print("Average memory usage per df:", m_use / f_ctn)
 
     
-
-
-
 def calculate_nodes_data(dm, nodes_column, elems_colums, elem_data_labels, accepted_nodes=None, dtypes={}):
     # add additional labels
     nodes_colums.extend(["node","timestep","run_ref","param_val"])
@@ -184,14 +180,10 @@ def calculate_nodes_data(dm, nodes_column, elems_colums, elem_data_labels, accep
             new_df.loc[:,column_key] = new_df[column_key].astype(dtypes[column_key])
     return new_df
 
-
-
 nodes_colums = [v for v in nodes_keys.split(";")]
 elems_colums = [v for v in elems_keys.split(";")]
 elem_data_labels = [v for v in elems_keys.split(";")]
 pickles_paths = search_dirs(tpm_pickles_dir, ".pickle")
-
-
 
 df_ref = pd.read_pickle(pickles_paths[0])
 
@@ -199,8 +191,6 @@ feb_file_ref = runs[0][0][0] # Using same file as ref since geometry is the same
 dm_ref = Data_Manipulator(feb_file_ref)
 dm_ref.set_data(pickle_path=pickles_paths[0])
 endo_nodes = set(dm_ref.face_dicts[dm_ref.set_order["Endocardio"]].keys())
-
-
 
 pickles_dir = path.join(runs_dir, "pickles")
 endo_nodes_data_pickles_dir = path.join(pickles_dir, "endo-nodes-data")
@@ -214,14 +204,10 @@ for pp in pickles_paths:
     new_file_name = path.join(endo_nodes_data_pickles_dir, "endo-{v}".format(v=path.basename(pp)))
     df.to_pickle(new_file_name)
 
-
-
-
-
 def combine_pickles(pickles_paths, df=None, started=False, _max=2):
 
     if len(pickles_paths) <= _max:
-        print([path.basename(pp) for pp in pickles_paths])
+        # print([path.basename(pp) for pp in pickles_paths])
         if started:
             df_list = [df]
             df_list.extend([pd.read_pickle(pp) for pp in pickles_paths])
@@ -230,9 +216,12 @@ def combine_pickles(pickles_paths, df=None, started=False, _max=2):
 
         df = pd.concat(df_list, sort=False).drop_duplicates(
         ).reset_index(drop=True)
+        
+        # print(df["run_ref"].describe())
 
         return df
-
+        # return pd.concat(df_list, sort=False).drop_duplicates(
+        # ).reset_index(drop=True)
     else:
         p = len(pickles_paths) // 2
         fh = pickles_paths[:p]
@@ -241,10 +230,16 @@ def combine_pickles(pickles_paths, df=None, started=False, _max=2):
         fh_df  = combine_pickles(fh, df, True)
         sh_df = combine_pickles(sh, fh_df, True)
 
-        return sh_df        
+        return sh_df
+
+        # print("fh")
+
+        # df = pd.concat([fh_df, sh_df], sort=False).drop_duplicates(
+        # ).reset_index(drop=True)
+
+        
 
     return sh_df
-
 
 
 pickles_dir = path.join(runs_dir, "pickles",)
@@ -253,31 +248,23 @@ pickles_paths = search_dirs(endo_nodes_data_pickles_dir, ".pickle", files=[])
 
 endo_data = combine_pickles(pickles_paths)
 
-
-
 endo_data_grouped = endo_data.groupby(["param_val", "timestep"])
-
-
 
 from scipy.spatial import ConvexHull
 def get_volume(df, labels=["x","y","z"]):
     return ConvexHull(df[labels].to_numpy(), qhull_options="Qt Qx Qv Q4 Q14").volume
 
-
-
-initial_volume = get_volume(dm_ref.initial_pos.loc[dm_ref.initial_pos["node"].isin(endo_nodes)])
-
-# PLV = −944 t 2 + 245 t, 0 ≤ t ≤ 0.2s
-
-
 # include the equation for the pressure
 def get_linear_pressure(t):
-    return (16/0.3) * t
+    if t < 0.1:
+        return 0.0
+    else:
+        return (16/0.2) * (t - 0.1)
 
-
+initial_volume = get_volume(dm_ref.initial_pos.loc[dm_ref.initial_pos["node"].isin(endo_nodes)])
+print("initial volume:", initial_volume)
 
 vol_vec = list()
-
 for name, group in endo_data_grouped:
     volume = get_volume(group)
     vol_data = {
@@ -290,56 +277,58 @@ for name, group in endo_data_grouped:
     vol_vec.append(vol_data)
 vol_df = pd.DataFrame.from_records(vol_vec)
 
-
-
 pickles_dir = path.join(runs_dir, "pickles",)
 final_data_dir = path.join(pickles_dir, "final-data")
 if not path.exists(final_data_dir):
     os.makedirs(final_data_dir)
-
 
 f_filename = path.join(final_data_dir, "final-df.pickle")
 vol_df.to_pickle(f_filename)
 f_filename = path.join(final_data_dir, "final-df.xlsx")
 vol_df.to_excel(f_filename)
 
-
-
 vol_df_grouped = vol_df.groupby("param_val")
 
 
-
 from matplotlib import pyplot as plt
-grid = plt.grid(color='r', linestyle='-', linewidth=2)
-fig1, ax = plt.subplots(1,1)
+# grid = plt.grid(color='r', linestyle='-', linewidth=2)
+fig, ax = plt.subplots(1,1)
 legends = []
 for (name, group) in vol_df_grouped:
     group.plot(kind='line',x='pressure',y='perc_vol',ax=ax, title="Pressure vs gamma")
     legends.append("gamma: {v}".format(v=np.round(name,3)))
+    # group.plot(kind='line',x='pressure',y='perc_vol', ax=ax, secondary_y=True)
+    # group.plot(x =['pressure', 'pressure'], y=['volume', 'perc_vol'], title=name, secondary_y=True, grid=grid)
 ax.grid(color='k', linestyle='--', linewidth=0.25)
 ax.legend(legends)
 ax.set_ylabel("Volume %")
 
-
-
 from matplotlib import pyplot as plt
-grid = plt.grid(color='r', linestyle='-', linewidth=2)
+# grid = plt.grid(color='r', linestyle='-', linewidth=2)
 fig2, ax2 = plt.subplots(1,1)
 legends = []
 for (name, group) in vol_df_grouped:
     group.plot(kind='line',x='pressure',y='volume',ax=ax2, title="Pressure vs gamma")
     legends.append("gamma: {v}".format(v=np.round(name,3)))
+    # group.plot(kind='line',x='pressure',y='perc_vol', ax=ax, secondary_y=True)
+    # group.plot(x =['pressure', 'pressure'], y=['volume', 'perc_vol'], title=name, secondary_y=True, grid=grid)
 ax2.grid(color='k', linestyle='--', linewidth=0.25)
 ax2.legend(legends)
 ax2.set_ylabel("Volume [ml]")
 
 
-
-from matplotlib.backends.backend_pdf import PdfPages
-
-pp = PdfPages('Pressure-vs-gamma.pdf')
-pp.savefig(fig1)
-pp.savefig(fig2)
-pp.close()
+# %%
+from matplotlib import pyplot as plt
+# grid = plt.grid(color='r', linestyle='-', linewidth=2)
+fig2, ax2 = plt.subplots(1,1)
+legends = []
+for (name, group) in vol_df_grouped:
+    group.plot(kind='line',x='timestep',y='volume',ax=ax2, title="Pressure vs gamma")
+    legends.append("gamma: {v}".format(v=np.round(name,3)))
+    # group.plot(kind='line',x='pressure',y='perc_vol', ax=ax, secondary_y=True)
+    # group.plot(x =['pressure', 'pressure'], y=['volume', 'perc_vol'], title=name, secondary_y=True, grid=grid)
+ax2.grid(color='k', linestyle='--', linewidth=0.25)
+ax2.legend(legends)
+ax2.set_ylabel("Volume [ml]")
 
 
