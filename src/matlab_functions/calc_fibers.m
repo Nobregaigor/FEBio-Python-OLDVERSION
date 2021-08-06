@@ -12,12 +12,12 @@
 function calculate_fibers_orientation(NODES_FILE, ELEMENTS_FILE, NODES_FILE_HEX, ELEMENTS_FILE_HEX, THETA_ENDO, THETA_EPI, OUTPUT_FOLDER_FILENAME)
 %% Define Macros
 
-apex = [0, 0, -75];
-base = [0, 0 , 20];
+apex = [-0.367668, -0.551779, 0.0815987];
+base = [0, 0 , 83.5];
 k = base - apex;
 
-% THETA_ENDO = 75;
-% THETA_EPI = -45;
+%THETA_ENDO = 75;
+%THETA_EPI = -45;
 
 
 %% Load Model
@@ -40,6 +40,10 @@ k = base - apex;
 % logic...
 % *****
 [baseFace, endoFace, epicFace] = getFacesIds(model,mesh,apex,base);
+
+baseFace = 3
+endoFace = 1
+epicFace = 2
 
 apply_bcs(model,baseFace,endoFace,epicFace); %base, endocardio, epicardio
 % apply_bcs(model,2,4,3) %base, endocardio, epicardio <-- work for

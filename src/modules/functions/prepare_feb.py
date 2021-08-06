@@ -34,8 +34,11 @@ def prepare_feb(inputs):
     #endo_range = [np.linspace(-80, -40, 5)]
     #epid_range= -endo_range
 
-    epid_range = [ 42,  47,  54,  58,  63,  69,  71,  78]
-    endo_range = [-51, -44, -72, -56, -40, -61, -68, -75]
+    # epid_range = [ 42,  47,  54,  58,  63,  69,  71,  78]
+    # endo_range = [-51, -44, -72, -56, -40, -61, -68, -75]
+
+    epid_range = [ 45,  70]
+    endo_range = [-60, -55]
 
     fibers_variations = []
 
